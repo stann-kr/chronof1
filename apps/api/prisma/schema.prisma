@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 드라이버 정보
+model Driver {
+  driver_id     Int      @id
+  driver_number String   @unique
+  code          String
+  full_name     String
+  first_name    String
+  last_name     String
+  team_name     String
+  country_code  String
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // 관계
+  stints  Stint[]
+  timings Timing[]
+
+  @@map("drivers")
+}
+
+// 세션 정보 (레이스, 퀄리파잉 등)
+model Session {
+  session_key       String   @id
+  year              Int
+  round             Int
+  event_name        String
+  session_name      String
+  session_type      String
+  circuit_name      String
+  circuit_short_name String
+  start_date        DateTime
+  end_date          DateTime
+  has_timing_data   Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // 관계
+  stints  Stint[]
+  timings Timing[]
+
+  @@map("sessions")
+}
+
+// 타이밍 데이터
+model Timing {
+  id             String   @id @default(uuid())
+  session_key    String
+  session        Session  @relation(fields: [session_key], references: [session_key])
+  frame_number   Int
+  driver_number  String
+  driver         Driver   @relation(fields: [driver_number], references: [driver_number])
+  position       Int
+  gap_to_leader  Float?
+  interval       Float?
+  last_lap_time  Float?
+  best_lap_time  Float?
+  sector1_time   Float?
+  sector2_time   Float?
+  sector3_time   Float?
+  compound       String?
+  tyre_age       Int?
+  timestamp      DateTime
+  created_at     DateTime @default(now())
+
+  @@index([session_key, frame_number])
+  @@index([driver_number, session_key])
+  @@map("timings")
+}
+
+// 타이어 스틴트 정보
+model Stint {
+  stint_id        String   @id @default(uuid())
+  session_key     String
+  session         Session  @relation(fields: [session_key], references: [session_key])
+  driver_number   String
+  driver          Driver   @relation(fields: [driver_number], references: [driver_number])
+  compound        String
+  stint_number    Int
+  stint_start_lap Int
+  stint_end_lap   Int?
+  stint_compound  String?  // 가이드에 언급된 필드 추가
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([session_key, driver_number])
+  @@map("stints")
+}
