@@ -17,21 +17,21 @@ release/v1.0.0 (릴리스 준비)
 
 ### 브랜치 네이밍 컨벤션
 
-> 팀원별로 브랜치명 앞에 이름 prefix(`stann/`, `danbe/` 등)를 붙이면 작업 내역을 명확히 구분할 수 있습니다.
+> 팀원별로 브랜치명 앞에 이름 prefix(`user/` 등)를 붙이면 작업 내역을 명확히 구분할 수 있습니다.
 > 권장 형식: `{이름}/{타입}/{도메인}-{설명}`
-> 예시: `stann/feat/web-calendar`, `danbe/fix/api-websocket`, `stann/refactor/types-driver`, `danbe/docs/api-guide`
+> 예시: `user/feat/web-calendar`, `user/fix/api-websocket`, `user/refactor/types-driver`, `user/docs/api-guide`
 
 | 브랜치 타입 | 네이밍 규칙 | 예시 | 설명 |
 |------------|-------------|------|------|
-| **기능 개발** | `{이름}/feat/{domain}-{feature}` | `stann/feat/web-calendar` | 새로운 기능 개발 |
-| | | `danbe/feat/api-replay` | API 기능 개발 |
-| | | `stann/feat/ui-components` | UI 컴포넌트 개발 |
-| **버그 수정** | `{이름}/fix/{domain}-{issue}` | `danbe/fix/web-chart-render` | 웹 차트 렌더링 버그 |
-| | | `stann/fix/api-websocket` | API WebSocket 연결 오류 |
-| **핫픽스** | `{이름}/hotfix/{critical-issue}` | `danbe/hotfix/security-patch` | 보안 패치 |
-| **릴리스** | `{이름}/release/v{version}` | `stann/release/v1.0.0` | 릴리스 준비 |
-| **개선/리팩토링** | `{이름}/refactor/{scope}` | `danbe/refactor/api-structure` | 코드 구조 개선 |
-| **문서** | `{이름}/docs/{topic}` | `stann/docs/api-guide` | 문서 작성/수정 |
+| **기능 개발** | `{이름}/feat/{domain}-{feature}` | `user/feat/web-calendar` | 새로운 기능 개발 |
+| | | `user/feat/api-replay` | API 기능 개발 |
+| | | `user/feat/ui-components` | UI 컴포넌트 개발 |
+| **버그 수정** | `{이름}/fix/{domain}-{issue}` | `user/fix/web-chart-render` | 웹 차트 렌더링 버그 |
+| | | `user/fix/api-websocket` | API WebSocket 연결 오류 |
+| **핫픽스** | `{이름}/hotfix/{critical-issue}` | `user/hotfix/security-patch` | 보안 패치 |
+| **릴리스** | `{이름}/release/v{version}` | `user/release/v1.0.0` | 릴리스 준비 |
+| **개선/리팩토링** | `{이름}/refactor/{scope}` | `user/refactor/api-structure` | 코드 구조 개선 |
+| **문서** | `{이름}/docs/{topic}` | `user/docs/api-guide` | 문서 작성/수정 |
 
 ### 브랜치 보호 규칙
 
