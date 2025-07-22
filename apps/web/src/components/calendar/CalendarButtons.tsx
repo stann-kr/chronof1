@@ -1,39 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useYearStore } from "../../hooks/stores/useYaerStore";
+import { CURRENT_YEAR, getDecades, getYearsOfSelectedDecade, IDecade, INITIAL_YEAR } from "../../utils/getDecadeRange";
 
 type SelectableListProps<T> = {
   items: T[];
+  selectedItem?:  number | null;
   getKey: (item: T) => string | number;
   getLabel: (item: T) => string | number;
   onSelect: (item: T) => void;
 };
 
-interface Decade {
-  startYear: number;
-  endYear: number;
-  years: number[];
-}
-
-// 선택 범위 년도 전체 ( 1991, 1992, ... , 1999 )
-const getYears = (): number[] => {
-  const currentYear = new Date().getFullYear();
-  return  Array.from({ length: currentYear - 1980 + 1 }, (_, i) => 1980 + i);
-}
-
-// 년도 범위 ( 1990s, 2000s ... etc)
-const groupYearsIntoDecades = (years: number[]): Decade[] => {
-  const decades: Decade[] = [];
-  for (let i = 0; i < years.length; i += 10) {
-      const decadeRange = years.slice(i, i + 10);
-      const startYear = decadeRange[0];
-      const endYear = decadeRange[decadeRange.length - 1];
-      decades.push({ startYear, endYear, years: decadeRange });
-    }
-    return decades;
-}
-
-// year buttons
 const SelectableList = <T,>({
   items,
+  selectedItem,
   getKey,
   getLabel,
   onSelect,
@@ -41,7 +20,10 @@ const SelectableList = <T,>({
   <ul>
     {items.map((item) => (
       <li key={getKey(item)}>
-        <button className="w-full mb-3" onClick={() => onSelect(item)}>
+        <button 
+          className={`w-full h-[45px] mb-3 focus:!outline-none focus:!border-none 
+            ${selectedItem === getKey(item) && '!bg-red-500 !font-bold'}`} 
+          onClick={() => onSelect(item)}>
           {getLabel(item)}
         </button>
       </li>
@@ -51,50 +33,56 @@ const SelectableList = <T,>({
 
 // 뒤로가기 버튼
 const BackButton = ({onBack}: { onBack: () => void }) => (
-  <button onClick={() => onBack()}>뒤로가기</button>
+  <button className="w-full mb-3" onClick={() => onBack()}>
+    <span className="font-bold">Back</span>
+  </button>
 )
 
 
 const CalendarButtons = () => {
-    const years = getYears();  // 1980년부터 현재까지 연도 목록 생성
-    const decades = groupYearsIntoDecades(years);  // 10년 단위로 그룹화
+  const [years, setYears] = useState<number[]>([]);
+  const decades = getDecades(INITIAL_YEAR, CURRENT_YEAR);  // 10년 단위로 그룹화
+  const { selectedDecade, selectedYear, setDecade, setYear } = useYearStore();
 
-    const [selectedDecade, setSelectedDecade] = useState<Decade | null>(null);
-    const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const handleDecadeSelect = (decade: IDecade) => {
+      setDecade(decade);
+      setYears(getYearsOfSelectedDecade(decade.startYear, decade.endYear));
+    };
 
-    const handleDecadeSelect = (decade: Decade) => {
-        setSelectedDecade(decade);
-      };
+    const handleYearSelect = (year: number) => {
+      setYear(year);
+    };
 
-      const handleYearSelect = (year: number) => {
-        setSelectedYear(year);
-      };
-
-      const resetSelection = () => {
-        setSelectedYear(null);
-        setSelectedDecade(null);
-      }
+    const resetSelection = () => {
+      setYears([]);
+      setDecade( {startYear: 0, endYear: 0})
+    }
+    
+    useEffect(() => {
+      setYears( getYearsOfSelectedDecade(selectedDecade.startYear, selectedDecade.endYear));
+    }, [])
 
     return(
-      <div>
-      {selectedDecade ? (
-        <>
-          <BackButton onBack={resetSelection} />
+      <div className="max-w-xs">
+        {selectedDecade.startYear !== 0 ? (
+          <>
+            <BackButton onBack={resetSelection} />
+            <SelectableList
+              items={years}
+              selectedItem={selectedYear}
+              getKey={(year) => year}
+              getLabel={(year) => year}
+              onSelect={handleYearSelect}
+            />
+          </>
+        ) : (
           <SelectableList
-            items={selectedDecade.years}
-            getKey={(year) => year}
-            getLabel={(year) => year}
-            onSelect={handleYearSelect}
+            items={decades}
+            getKey={(decade) => `${decade.startYear}-${decade.endYear}`}
+            getLabel={(decade) => `${decade.startYear}s`}
+            onSelect={handleDecadeSelect}
           />
-        </>
-      ) : (
-        <SelectableList
-          items={decades}
-          getKey={(decade) => `${decade.startYear}-${decade.endYear}`}
-          getLabel={(decade) => `${decade.startYear}s`}
-          onSelect={handleDecadeSelect}
-        />
-      )}
+        )}
     </div>
     )
 }
