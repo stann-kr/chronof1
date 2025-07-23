@@ -1,0 +1,149 @@
+model Season {
+  seasonYear  Int       @id @map("season_year")
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+
+  events                   Event[]
+  driverSeasonStandings    DriverSeasonStanding[]
+  constructorSeasonStandings ConstructorSeasonStanding[]
+  driverConstructors       DriverConstructor[]
+  
+  @@schema("history")
+}
+
+model Circuit {
+  circuitId  Int      @id @default(autoincrement()) @map("circuit_id")
+  name       String
+  locality   String?
+  country    String?
+  latitude   Float?
+  longitude  Float?
+
+  events     Event[]
+  
+  @@schema("history")
+}
+
+model Event {
+  eventId     Int      @id @default(autoincrement()) @map("event_id")
+  seasonYear  Int      @map("season_year")
+  circuitId   Int      @map("circuit_id")
+  round       Int
+  officialName String  @map("official_name")
+  eventDate   DateTime @map("event_date")
+
+  season      Season   @relation(fields: [seasonYear],  references: [seasonYear])
+  circuit     Circuit  @relation(fields: [circuitId],   references: [circuitId])
+  driverEventResults      DriverEventResult[]
+  constructorEventResults ConstructorEventResult[]
+
+  @@unique([seasonYear, round])
+  @@schema("history")
+}
+
+model Constructor {
+  constructorId Int     @id @default(autoincrement()) @map("constructor_id")
+  name          String  @unique
+  nationality   String?
+
+  driverSeasonStandings     DriverSeasonStanding[]
+  constructorSeasonStandings ConstructorSeasonStanding[]
+  driverEventResults        DriverEventResult[]
+  constructorEventResults   ConstructorEventResult[]
+  driverConstructors        DriverConstructor[]
+  @@schema("history")
+}
+
+model Driver {
+  driverId   Int     @id @default(autoincrement()) @map("driver_id")
+  code       String? @db.Char(3) @unique
+  forename   String
+  surname    String
+  dob        DateTime? 
+  nationality String?
+  number     Int?
+
+  driverSeasonStandings  DriverSeasonStanding[]
+  driverEventResults     DriverEventResult[]
+  driverConstructors     DriverConstructor[]
+  @@schema("history")
+}
+
+model DriverSeasonStanding {
+  seasonYear    Int  @map("season_year")
+  driverId      Int  @map("driver_id")
+  constructorId Int  @map("constructor_id")
+
+  position   Int?
+  points     Decimal? @db.Decimal(6,1)
+  wins       Int?
+
+  season      Season      @relation(fields: [seasonYear], references: [seasonYear])
+  driver      Driver      @relation(fields: [driverId],   references: [driverId])
+  constructor Constructor @relation(fields: [constructorId], references: [constructorId])
+
+  @@id([seasonYear, driverId, constructorId])
+  @@schema("history")
+}
+
+model ConstructorSeasonStanding {
+  seasonYear    Int  @map("season_year")
+  constructorId Int  @map("constructor_id")
+  position      Int?
+  points        Decimal? @db.Decimal(6,1)
+  wins          Int?
+
+  season      Season      @relation(fields: [seasonYear],    references: [seasonYear])
+  constructor Constructor @relation(fields: [constructorId], references: [constructorId])
+
+  @@id([seasonYear, constructorId])
+  @@schema("history")
+}
+
+model DriverEventResult {
+  eventId       Int     @map("event_id")
+  driverId      Int     @map("driver_id")
+  constructorId Int     @map("constructor_id")
+  grid          Int?
+  finishPos     Int?    @map("finish_pos")
+  points        Decimal? @db.Decimal(5,1)
+  laps          Int?
+  status        String?
+  fastestLapTime String? @map("fastest_lap_time")
+
+  event       Event       @relation(fields: [eventId],       references: [eventId])
+  driver      Driver      @relation(fields: [driverId],      references: [driverId])
+  constructor Constructor @relation(fields: [constructorId], references: [constructorId])
+
+  @@id([eventId, driverId])
+  @@schema("history")
+}
+
+model ConstructorEventResult {
+  eventId       Int  @map("event_id")
+  constructorId Int  @map("constructor_id")
+  points        Decimal? @db.Decimal(6,1)
+  finishPos     Int? @map("finish_pos")
+
+  event       Event       @relation(fields: [eventId],       references: [eventId])
+  constructor Constructor @relation(fields: [constructorId], references: [constructorId])
+
+  @@id([eventId, constructorId])
+  @@schema("history")
+}
+
+model DriverConstructor {
+  driverId      Int  @map("driver_id")
+  constructorId Int  @map("constructor_id")
+  seasonYear    Int  @map("season_year")
+  fromRound     Int? @map("from_round")
+  toRound       Int? @map("to_round")
+
+  driver      Driver      @relation(fields: [driverId],      references: [driverId])
+  constructor Constructor @relation(fields: [constructorId], references: [constructorId])
+  season      Season      @relation(fields: [seasonYear],    references: [seasonYear])
+
+  @@id([driverId, constructorId, seasonYear])
+  @@unique([driverId, constructorId, seasonYear, fromRound])
+  @@schema("history")
+}

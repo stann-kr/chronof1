@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
@@ -18,9 +18,5 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 
-  async enableShutdownHooks(app: INestApplication) {
-    this.$on('beforeExit', async () => {
-      await app.close();
-    });
-  }
+  // Prisma v5 이상에서는 $on('beforeExit') 지원되지 않으므로 해당 메서드 제거
 }

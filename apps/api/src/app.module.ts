@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { ResultsModule } from './results/results.module';
-import { ReplayModule } from './replay/replay.module';
-import { IngestModule } from './ingest/ingest.module';
+import { ResultsModule } from './modules/results/results.module';
 import { ConfigModule } from './config/config.module';
 
 @Module({
@@ -12,8 +10,6 @@ import { ConfigModule } from './config/config.module';
     ConfigModule,
     PrismaModule,
     ResultsModule,
-    ReplayModule,
-    IngestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
