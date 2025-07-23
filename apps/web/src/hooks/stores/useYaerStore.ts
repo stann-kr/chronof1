@@ -4,7 +4,7 @@ import { CURRENT_YEAR, getDecadeForYear, IDecade } from "../../utils/getDecadeRa
 
 interface ICalendarState {
     selectedDecade: IDecade;
-    selectedYear: number | null;
+    selectedYear: number;
     setDecade: (decade: IDecade) => void;
     setYear: (year: number) => void;
 }

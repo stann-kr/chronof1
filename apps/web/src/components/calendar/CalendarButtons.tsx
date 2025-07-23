@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useYearStore } from "../../hooks/stores/useYaerStore";
 import { CURRENT_YEAR, getDecades, getYearsOfSelectedDecade, IDecade, INITIAL_YEAR } from "../../utils/getDecadeRange";
 
 type SelectableListProps<T> = {
   items: T[];
-  selectedItem?:  number | null;
+  selectedKey:  number | string;
   getKey: (item: T) => string | number;
   getLabel: (item: T) => string | number;
   onSelect: (item: T) => void;
@@ -12,7 +12,7 @@ type SelectableListProps<T> = {
 
 const SelectableList = <T,>({
   items,
-  selectedItem,
+  selectedKey,
   getKey,
   getLabel,
   onSelect,
@@ -22,7 +22,7 @@ const SelectableList = <T,>({
       <li key={getKey(item)}>
         <button 
           className={`w-full h-[45px] mb-3 focus:!outline-none focus:!border-none 
-            ${selectedItem === getKey(item) && '!bg-red-500 !font-bold'}`} 
+            ${selectedKey === getKey(item) && '!bg-red-500 !font-bold'}`} 
           onClick={() => onSelect(item)}>
           {getLabel(item)}
         </button>
@@ -40,13 +40,16 @@ const BackButton = ({onBack}: { onBack: () => void }) => (
 
 
 const CalendarButtons = () => {
-  const [years, setYears] = useState<number[]>([]);
+  const [mode, setMode] = useState<'decade' | 'year'>('year');
   const decades = getDecades(INITIAL_YEAR, CURRENT_YEAR);  // 10년 단위로 그룹화
   const { selectedDecade, selectedYear, setDecade, setYear } = useYearStore();
 
-  const handleDecadeSelect = (decade: IDecade) => {
+  const years = getYearsOfSelectedDecade(selectedDecade.startYear, selectedDecade.endYear);
+
+
+    const handleDecadeSelect = (decade: IDecade) => {
       setDecade(decade);
-      setYears(getYearsOfSelectedDecade(decade.startYear, decade.endYear));
+      setMode('year');
     };
 
     const handleYearSelect = (year: number) => {
@@ -54,22 +57,17 @@ const CalendarButtons = () => {
     };
 
     const resetSelection = () => {
-      setYears([]);
-      setDecade( {startYear: 0, endYear: 0})
+      setMode('decade');
     }
-    
-    useEffect(() => {
-      setYears( getYearsOfSelectedDecade(selectedDecade.startYear, selectedDecade.endYear));
-    }, [])
 
     return(
       <div className="max-w-xs">
-        {selectedDecade.startYear !== 0 ? (
+        {mode === 'year' ? (
           <>
             <BackButton onBack={resetSelection} />
             <SelectableList
               items={years}
-              selectedItem={selectedYear}
+              selectedKey={selectedYear}
               getKey={(year) => year}
               getLabel={(year) => year}
               onSelect={handleYearSelect}
@@ -78,6 +76,7 @@ const CalendarButtons = () => {
         ) : (
           <SelectableList
             items={decades}
+            selectedKey={`${selectedDecade.startYear}-${selectedDecade.endYear}`}
             getKey={(decade) => `${decade.startYear}-${decade.endYear}`}
             getLabel={(decade) => `${decade.startYear}s`}
             onSelect={handleDecadeSelect}
