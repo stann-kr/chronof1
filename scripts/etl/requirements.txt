@@ -1,0 +1,5 @@
+fastf1==3.6.0
+pandas>=2.2
+psycopg[binary,pool]==3.1.18
+python-dotenv>=1.0
+tqdm
