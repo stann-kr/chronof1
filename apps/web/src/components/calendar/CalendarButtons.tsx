@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useYearStore } from "../../hooks/stores/useYaerStore";
 import { CURRENT_YEAR, getDecades, getYearsOfSelectedDecade, IDecade, INITIAL_YEAR } from "../../utils/getDecadeRange";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 type SelectableListProps<T> = {
   items: T[];
@@ -33,35 +34,44 @@ const SelectableList = <T,>({
 
 // 뒤로가기 버튼
 const BackButton = ({onBack}: { onBack: () => void }) => (
-  <button className="w-full mb-3" onClick={() => onBack()}>
+  <button className="w-full mb-3 !bg-[#2C3A47]" onClick={() => onBack()}>
     <span className="font-bold">Back</span>
   </button>
 )
 
 
 const CalendarButtons = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [mode, setMode] = useState<'decade' | 'year'>('year');
   const decades = getDecades(INITIAL_YEAR, CURRENT_YEAR);  // 10년 단위로 그룹화
   const { selectedDecade, selectedYear, setDecade, setYear } = useYearStore();
+  const [nowDecade, setNowDecade] = useState<IDecade>(selectedDecade);
 
-  const years = getYearsOfSelectedDecade(selectedDecade.startYear, selectedDecade.endYear);
-
+  const years = getYearsOfSelectedDecade(nowDecade.startYear, nowDecade.endYear);
 
     const handleDecadeSelect = (decade: IDecade) => {
-      setDecade(decade);
+      setNowDecade(decade)
       setMode('year');
     };
 
     const handleYearSelect = (year: number) => {
       setYear(year);
+      setDecade(nowDecade);
+      const pathList = location.pathname.slice(1).split('/');
+      const url = `/${pathList[0]}/${year}${pathList.length > 2 ? '/' + pathList[2] : '' }`
+      navigate(url)
     };
 
     const resetSelection = () => {
+      setNowDecade(selectedDecade);
       setMode('decade');
+      console.log(decades);
     }
 
+
     return(
-      <div className="max-w-xs">
+      <div className="max-w-[200px] min-w-[150px] mt-19 max-h-[640px] overflow-auto">
         {mode === 'year' ? (
           <>
             <BackButton onBack={resetSelection} />
@@ -76,7 +86,7 @@ const CalendarButtons = () => {
         ) : (
           <SelectableList
             items={decades}
-            selectedKey={`${selectedDecade.startYear}-${selectedDecade.endYear}`}
+            selectedKey={`${nowDecade.startYear}-${nowDecade.endYear}`}
             getKey={(decade) => `${decade.startYear}-${decade.endYear}`}
             getLabel={(decade) => `${decade.startYear}s`}
             onSelect={handleDecadeSelect}

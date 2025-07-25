@@ -1,21 +1,46 @@
 import React, { useEffect, useRef, useState } from "react";
+import ResultsTable from "./container/ResultsTable";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ScheduleCardList from "./container/Schedule/ScheduleCardList";
+import { useYearStore } from "../../hooks/stores/useYaerStore";
 
 type TTabList = {
     tabs: string[];
     tabClass?: string;
+    year?: string;
+    onTabClick?:  (tab: string) => void;
+    activeTab?: string;
 }
 
-const TabList = ({tabs, tabClass}: TTabList) => (
+const TabList = ({tabs, tabClass, year, onTabClick, activeTab}: TTabList) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleTabClick = (tab: string) => {
+        if (onTabClick) onTabClick(tab);
+        const lowerTab = tab.toLowerCase();
+        let targetPath = `/${lowerTab}/${year}`;
+        if(lowerTab === 'results') {
+            targetPath += '/race';
+        }
+        navigate(targetPath);
+    };
+
+    return (
     <ul className={`flex ${tabClass}`}>
-        {
-            tabs.map((tab) => (
+        {   tabs.map((tab) => (
                 <li className="mr-5" key={tab}>
-                    <button className="!bg-transparent !font-bold">{tab}</button>
+                    <button
+                        className={`!bg-transparent ${(activeTab === tab && location.pathname.includes(tab.toLowerCase())) ? '!font-bold !text-red-400' : ''}`}
+                        onClick={() => handleTabClick(tab)}
+                    >
+                        {tab}
+                    </button>
                 </li>
             ))
         }
     </ul>
-)
+)}
 
 type TSelectBox = {
     options: string[];
@@ -58,49 +83,49 @@ const SelectBox = ({options} :TSelectBox) => {
       )
     };
 
+    const Title = () => {
+        const year = useYearStore((state) => state.selectedYear);
+        
+        return(
+            <h3 className="text-[28px] font-bold pb-5 uppercase">
+                {year} : FIA FORMULA 1 CHAMPIONSHIP
+            </h3>
+        )
+    }
+    
+
 const CalendarContainer = () => {
+    const { year } = useParams();
+    const [activeMainTab, setActiveMainTab] = useState('Schedule');
+    const location = useLocation();
     // 탭 정보 
     const tableMainTabs = ['Schedule', 'Results'];
     const tableSubTabs = ['Races', 'Drivers', 'Teams']
-
-    // TODO :: 추후 데이터 연동 시 동적으로 생성
-    const rowData = ['grand prx', 'date', 'winner', 'team', 'laps', 'time'];
 
     // TODO ::  select option api 연동 시 데이터 받아와야 함
     const selectOptions1 = ['Australia', 'China', 'Japan', 'Bahrain', 'Saudi Arabia', 'Miami'];
     const selectOptions2 = ['Practice 1', 'Sprint Grid', 'Sprint', 'Pit Stop Summary', 'Fastest Laps'];
 
-    return(
-        <div className="col-span-3 h-[680px]">
-            <div className="flex flex-col items-start mb-5">
-                <div className="flex mb-5 w-full">
-                    <TabList tabs={tableMainTabs} />
-                    <TabList tabs={tableSubTabs} tabClass='ml-auto'/>
-                </div>
 
-                <div className="flex">
-                    <SelectBox options={selectOptions1} />
-                    <SelectBox options={selectOptions2} />
+    
+
+    return(
+        <div className="w-[80%] min-w-[1280px] ml-10 overflow-hidden pb-[100px]">
+             <div className="flex flex-col items-center mb-2">
+                <Title />
+
+                <div className="flex mb-2 w-full">
+                    <TabList tabs={tableMainTabs} year={year} onTabClick={setActiveMainTab} activeTab={activeMainTab} />
+                    {activeMainTab === 'Results' && (
+                        <TabList tabs={tableSubTabs} tabClass='ml-auto'/>
+                    )}
                 </div>
             </div>
-            
-
-            <table className="w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 text-black">
-                    <tr>
-                        {
-                            rowData.map((data) => (
-                                <th key={data} className="px-6 py-3 text-left uppercase">{data}</th>
-                            ))
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>먀먀</td>
-                    </tr>
-                </tbody>
-            </table>
+            {
+                location.pathname.includes('results') ? 
+                <h3 className="mt-50">준비중입니다.</h3>
+                : <ScheduleCardList />
+            } 
         </div>
     )
 }

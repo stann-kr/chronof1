@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { CURRENT_YEAR } from "../../utils/getDecadeRange";
 
 type TNavi = {
     to: string;
@@ -7,7 +8,8 @@ type TNavi = {
 }
 
 const NAV_ITEMS: TNavi[] = [
-    { name: 'Calendar', to: '/calendar' },
+    { name: 'Calendar', to: `/schedule/${CURRENT_YEAR}` },
+    { name: 'Results', to: `/results/${CURRENT_YEAR}/race` },
     { name: 'Dashboard', to: '/dashboard' },
     { name: 'Home', to: '/' },
 ]

@@ -3,7 +3,7 @@ import { FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="w-full fixed right-0 bottom-0 flex items-center pr-5 pl-5 my-3 bg-transparent">
+        <footer className="bg-[#242424] w-full fixed right-0 bottom-0 flex items-center pr-5 pl-5 pb-3">
             <div className="p-3">
                 <FaGithub className="w-6 h-6" />
             </div>
