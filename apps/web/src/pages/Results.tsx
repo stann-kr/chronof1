@@ -1,6 +1,6 @@
 import React from "react";
-import CalendarButtons from "../components/calendar/CalendarButtons";
-import CalendarContainer from "../components/calendar/CalendarContainer";
+import CalendarButtons from "../components/common/YearsButtons";
+import CalendarContainer from "../components/common/RightDataComponent";
 
 const Results = () => {
     return(

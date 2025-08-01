@@ -8,7 +8,7 @@ type TNavi = {
 }
 
 const NAV_ITEMS: TNavi[] = [
-    { name: 'Calendar', to: `/schedule/${CURRENT_YEAR}` },
+    { name: 'Schedule', to: `/schedule/${CURRENT_YEAR}` },
     { name: 'Results', to: `/results/${CURRENT_YEAR}/race` },
     { name: 'Dashboard', to: '/dashboard' },
     { name: 'Home', to: '/' },

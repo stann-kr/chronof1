@@ -7,7 +7,7 @@ const App = () => {
   return (
     <>
       <Header />
-      <main className='w-screen h-full px-[10%] text-center'>
+      <main className='w-screen h-full px-[5%] text-center'>
         <AppRoutes />
       </main>
       <Footer />

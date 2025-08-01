@@ -1,6 +1,20 @@
 import React from "react";
 import { IRackingData, ScheduleCardProps } from "./ScheduleCardList";
 
+enum STATUS {
+    LIVE = 'live',
+    SOON = 'soon',
+    REPLAY = 'replay',
+    REPLAY_NONE = 'noReplay'
+}
+
+const STATUS_CLASS_MAP: Record<STATUS, string> = {
+    [STATUS.LIVE]: "font-black text-red-500",
+    [STATUS.SOON]: "font-black text-blue-500",
+    [STATUS.REPLAY]: "font-black text-green-500",
+    [STATUS.REPLAY_NONE]: "font-black text-gray-400",
+  };
+
 const ScheduleCard = ({
     round,
     country,
@@ -9,7 +23,6 @@ const ScheduleCard = ({
     status,
     rankings,
   } :ScheduleCardProps) => {
-
     const Ranking = ({rank, name, time} : IRackingData) => (
         <div className="bg-[#2c2c2c]/70 rounded-xl flex items-center px-2" key={name}>
             <div className="font-black">
@@ -25,18 +38,10 @@ const ScheduleCard = ({
 
     return(
         <div 
-            className="
-                w-full
-                h-full
-                min-w-[380px]
-                min-h-[380px] 
-                max-h-[380px]
+            className="w-full h-full min-w-[380px] min-h-[380px] max-h-[380px]
                 bg-[url(/src/assets/race_image.png)] bg-no-repeat bg-cover bg-bottom
-                rounded-md
-                p-3 
-                relative
-                uppercase
-                cursor-pointer
+                rounded-md p-3 
+                relative uppercase cursor-pointer
                 ">
 
             <div className="w-full h-full absolute top-0 right-0 left-0 rounded-md bg-linear-to-t from-black to-white-500 to-100%"></div>
@@ -49,7 +54,9 @@ const ScheduleCard = ({
                     </div>
 
                     <div>
-                        <span className="font-black text-red-500">{status}</span>
+                        {/* <span className="font-black text-red-500">{status}</span> */}
+
+                        <span className={STATUS_CLASS_MAP[status as STATUS]}>{status}</span>
                     </div>
                 </div>
 

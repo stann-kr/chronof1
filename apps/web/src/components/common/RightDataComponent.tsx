@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import ResultsTable from "./container/ResultsTable";
+import ResultsTable from "../results/ResultsTable";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import ScheduleCardList from "./container/Schedule/ScheduleCardList";
+import ScheduleCardList from "../schedules/ScheduleCardList";
 import { useYearStore } from "../../hooks/stores/useYaerStore";
 
 type TTabList = {
