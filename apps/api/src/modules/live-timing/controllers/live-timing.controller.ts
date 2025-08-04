@@ -46,6 +46,95 @@ export class LiveTimingController {
   }
 
   /**
+   * WebSocket 연결 정보를 제공합니다.
+   */
+  @Get('websocket-info')
+  @ApiOperation({
+    summary: 'WebSocket 연결 정보',
+    description: `
+    라이브 타이밍 WebSocket 연결 방법과 사용법을 안내합니다.
+    
+    **연결 URL**: ws://localhost:3000/live-timing
+    
+    **지원 메시지**:
+    
+    1. **세션 참가**: 
+       \`\`\`json
+       {
+         "event": "join-session",
+         "data": { "sessionId": 1 }
+       }
+       \`\`\`
+    
+    2. **재생 제어**:
+       \`\`\`json
+       {
+         "event": "replay-control", 
+         "data": {
+           "type": "START|PAUSE|STOP|SEEK",
+           "sessionId": 1,
+           "speed": 1,
+           "timestamp": 30
+         }
+       }
+       \`\`\`
+    
+    **수신 메시지**:
+    - \`CONNECTION_STATUS\`: 연결 상태
+    - \`SESSION_INFO\`: 세션 정보
+    - \`TIMING_UPDATE\`: 실시간 타이밍 데이터
+    - \`ERROR\`: 에러 메시지
+    `,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'WebSocket 연결 정보',
+    schema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', example: 'ws://localhost:3000/live-timing' },
+        protocol: { type: 'string', example: 'Socket.IO' },
+        events: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              description: { type: 'string' },
+              example: { type: 'object' }
+            }
+          }
+        }
+      }
+    }
+  })
+  getWebSocketInfo() {
+    return {
+      url: 'ws://localhost:3000/live-timing',
+      protocol: 'Socket.IO',
+      events: [
+        {
+          name: 'join-session',
+          description: '특정 세션에 참가하여 타이밍 데이터 수신 시작',
+          example: { sessionId: 1 }
+        },
+        {
+          name: 'replay-control',
+          description: '재생 제어 (시작/일시정지/정지/탐색)',
+          example: { type: 'START', sessionId: 1, speed: 1 }
+        }
+      ],
+      responses: [
+        {
+          name: 'message',
+          description: '서버에서 클라이언트로 전송되는 모든 메시지',
+          types: ['CONNECTION_STATUS', 'SESSION_INFO', 'TIMING_UPDATE', 'ERROR']
+        }
+      ]
+    };
+  }
+
+  /**
    * 특정 연도의 이벤트 목록을 조회합니다.
    */
   @Get('seasons/:year/events')

@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { 
-  SeasonDto, 
-  EventDto, 
-  SessionDto, 
-  SessionDriverDto 
-} from '../dto';
+import { SeasonDto, EventDto, SessionDto, SessionDriverDto } from '../dto';
 
 /**
  * 라이브 타이밍 서비스
@@ -64,8 +59,9 @@ export class LiveTimingService {
       eventEnd: event.eventEnd,
       status: event.status ?? undefined,
       // 라이브 세션이 있고, 드라이버 세션 데이터가 있으면 라이브 타이밍 지원
-      hasLiveTiming: event.liveSessions.length > 0 && 
-                     event.liveSessions.some(session => session.driverSessions.length > 0),
+      hasLiveTiming:
+        event.liveSessions.length > 0 &&
+        event.liveSessions.some(session => session.driverSessions.length > 0),
       circuit: {
         id: event.circuit.id,
         name: event.circuit.name,
@@ -105,8 +101,9 @@ export class LiveTimingService {
       duration: session.duration ?? undefined,
       status: session.status ?? undefined,
       // 라이브 세션이 있고, 드라이버 세션 데이터가 있으면 라이브 데이터 있음
-      hasLiveData: session.liveSessions.length > 0 && 
-                   session.liveSessions.some(liveSession => liveSession.driverSessions.length > 0),
+      hasLiveData:
+        session.liveSessions.length > 0 &&
+        session.liveSessions.some(liveSession => liveSession.driverSessions.length > 0),
     }));
   }
 
@@ -136,11 +133,11 @@ export class LiveTimingService {
 
     // 첫 번째 라이브 세션의 드라이버들을 반환 (일반적으로 세션당 하나의 라이브 세션만 있음)
     const liveSession = liveSessions[0];
-    
+
     if (!liveSession) {
       return [];
     }
-    
+
     return liveSession.driverSessions.map(driverSession => ({
       id: driverSession.id,
       carNumber: driverSession.carNumber,
@@ -184,7 +181,9 @@ export class LiveTimingService {
     if (!liveSession) return false;
 
     // 드라이버 세션이 있고, 랩 데이터가 있으면 라이브 타이밍 데이터 있음
-    return liveSession.driverSessions.length > 0 && 
-           liveSession.driverSessions.some(ds => ds.laps.length > 0);
+    return (
+      liveSession.driverSessions.length > 0 &&
+      liveSession.driverSessions.some(ds => ds.laps.length > 0)
+    );
   }
 }

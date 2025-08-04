@@ -21,7 +21,6 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@f1/types": "workspace:*",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
@@ -36,7 +35,7 @@
     "joi": "^17.12.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.7.4",
+    "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {

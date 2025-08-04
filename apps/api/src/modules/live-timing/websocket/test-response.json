@@ -1,0 +1,998 @@
+[오후 12:38:40] 메시지 전송: join-session -> {"sessionId":1}
+[오후 12:38:40] 서버 메시지: {
+  "type": "SESSION_INFO",
+  "session": {
+    "id": 1,
+    "name": "Race",
+    "type": "R",
+    "date": "2025-03-16T00:00:00.000Z",
+    "duration": 120,
+    "status": "completed"
+  },
+  "event": {
+    "id": 1,
+    "name": "Australian Grand Prix",
+    "round": 1
+  },
+  "circuit": {
+    "id": 1,
+    "name": "Melbourne",
+    "shortName": "Albert Park",
+    "length": 5.303
+  },
+  "timestamp": "2025-08-04T03:38:40.925Z"
+}
+[오후 12:38:42] 메시지 전송: replay-control -> {"type":"START","sessionId":1,"speed":1}
+[오후 12:38:43] 서버 메시지: {
+  "type": "TIMING_UPDATE",
+  "sessionId": 1,
+  "timestamp": 0,
+  "realTime": "2025-08-04T03:38:43.744Z",
+  "currentLap": 57,
+  "sessionStatus": "completed",
+  "drivers": [
+    {
+      "driverSessionId": 1,
+      "carNumber": 4,
+      "position": 1,
+      "lapNumber": 57,
+      "currentLapTime": 87126,
+      "sector1Time": 30396,
+      "sector2Time": 18664,
+      "sector3Time": 38066,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 1,
+        "number": 4,
+        "code": "NOR",
+        "fullName": "Lando Norris"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 2,
+      "carNumber": 1,
+      "position": 2,
+      "lapNumber": 57,
+      "currentLapTime": 87400,
+      "sector1Time": 30421,
+      "sector2Time": 18285,
+      "sector3Time": 38694,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 11,
+      "driver": {
+        "id": 2,
+        "number": 1,
+        "code": "VER",
+        "fullName": "Max Verstappen"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 3,
+      "carNumber": 63,
+      "position": 3,
+      "lapNumber": 57,
+      "currentLapTime": 89117,
+      "sector1Time": 31356,
+      "sector2Time": 18721,
+      "sector3Time": 39040,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 3,
+        "number": 63,
+        "code": "RUS",
+        "fullName": "George Russell"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 4,
+      "carNumber": 12,
+      "position": 4,
+      "lapNumber": 57,
+      "currentLapTime": 88650,
+      "sector1Time": 31048,
+      "sector2Time": 18709,
+      "sector3Time": 38893,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 4,
+        "number": 12,
+        "code": "ANT",
+        "fullName": "Kimi Antonelli"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 5,
+      "carNumber": 23,
+      "position": 5,
+      "lapNumber": 57,
+      "currentLapTime": 89944,
+      "sector1Time": 31494,
+      "sector2Time": 18857,
+      "sector3Time": 39593,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 5,
+        "number": 23,
+        "code": "ALB",
+        "fullName": "Alexander Albon"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 6,
+      "carNumber": 18,
+      "position": 6,
+      "lapNumber": 57,
+      "currentLapTime": 90957,
+      "sector1Time": 31819,
+      "sector2Time": 19209,
+      "sector3Time": 39929,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 6,
+        "number": 18,
+        "code": "STR",
+        "fullName": "Lance Stroll"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 7,
+      "carNumber": 27,
+      "position": 7,
+      "lapNumber": 57,
+      "currentLapTime": 90860,
+      "sector1Time": 31739,
+      "sector2Time": 19048,
+      "sector3Time": 40073,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 7,
+        "number": 27,
+        "code": "HUL",
+        "fullName": "Nico Hulkenberg"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 8,
+      "carNumber": 16,
+      "position": 8,
+      "lapNumber": 57,
+      "currentLapTime": 90964,
+      "sector1Time": 31616,
+      "sector2Time": 18907,
+      "sector3Time": 40441,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 10,
+      "driver": {
+        "id": 8,
+        "number": 16,
+        "code": "LEC",
+        "fullName": "Charles Leclerc"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 9,
+      "carNumber": 81,
+      "position": 9,
+      "lapNumber": 57,
+      "currentLapTime": 89517,
+      "sector1Time": 31475,
+      "sector2Time": 18119,
+      "sector3Time": 39923,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 9,
+        "number": 81,
+        "code": "PIA",
+        "fullName": "Oscar Piastri"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 10,
+      "carNumber": 44,
+      "position": 10,
+      "lapNumber": 57,
+      "currentLapTime": 92418,
+      "sector1Time": 31658,
+      "sector2Time": 18758,
+      "sector3Time": 42002,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 10,
+      "driver": {
+        "id": 10,
+        "number": 44,
+        "code": "HAM",
+        "fullName": "Lewis Hamilton"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 11,
+      "carNumber": 10,
+      "position": 11,
+      "lapNumber": 57,
+      "currentLapTime": 91312,
+      "sector1Time": 31774,
+      "sector2Time": 19075,
+      "sector3Time": 40463,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 11,
+      "driver": {
+        "id": 11,
+        "number": 10,
+        "code": "GAS",
+        "fullName": "Pierre Gasly"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 12,
+      "carNumber": 22,
+      "position": 12,
+      "lapNumber": 57,
+      "currentLapTime": 91511,
+      "sector1Time": 31959,
+      "sector2Time": 19035,
+      "sector3Time": 40517,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 10,
+      "driver": {
+        "id": 12,
+        "number": 22,
+        "code": "TSU",
+        "fullName": "Yuki Tsunoda"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    },
+    {
+      "driverSessionId": 13,
+      "carNumber": 31,
+      "position": 13,
+      "lapNumber": 57,
+      "currentLapTime": 90924,
+      "sector1Time": 32076,
+      "sector2Time": 19022,
+      "sector3Time": 39826,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 11,
+      "driver": {
+        "id": 13,
+        "number": 31,
+        "code": "OCO",
+        "fullName": "Esteban Ocon"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 14,
+      "carNumber": 87,
+      "position": 14,
+      "lapNumber": 57,
+      "currentLapTime": 90553,
+      "sector1Time": 31384,
+      "sector2Time": 19175,
+      "sector3Time": 39994,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 14,
+        "number": 38,
+        "code": "BEA",
+        "fullName": "Oliver Bearman"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 15,
+      "carNumber": 30,
+      "position": 15,
+      "lapNumber": 47,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "MEDIUM",
+      "tireAge": 14,
+      "driver": {
+        "id": 15,
+        "number": 30,
+        "code": "LAW",
+        "fullName": "Liam Lawson"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 16,
+      "carNumber": 5,
+      "position": 16,
+      "lapNumber": 46,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 2,
+      "driver": {
+        "id": 16,
+        "number": 5,
+        "code": "BOR",
+        "fullName": "Gabriel Bortoleto"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 17,
+      "carNumber": 14,
+      "position": 17,
+      "lapNumber": 33,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 33,
+      "driver": {
+        "id": 17,
+        "number": 14,
+        "code": "ALO",
+        "fullName": "Fernando Alonso"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 18,
+      "carNumber": 55,
+      "position": 18,
+      "lapNumber": 1,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 1,
+      "driver": {
+        "id": 18,
+        "number": 55,
+        "code": "SAI",
+        "fullName": "Carlos Sainz"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 19,
+      "carNumber": 7,
+      "position": 19,
+      "lapNumber": 1,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 1,
+      "driver": {
+        "id": 19,
+        "number": 7,
+        "code": "DOO",
+        "fullName": "Jack Doohan"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 20,
+      "carNumber": 6,
+      "position": 20,
+      "lapNumber": 1,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 1,
+      "driver": {
+        "id": 20,
+        "number": 6,
+        "code": "HAD",
+        "fullName": "Isack Hadjar"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    }
+  ]
+}
+[오후 12:38:44] 서버 메시지: {
+  "type": "TIMING_UPDATE",
+  "sessionId": 1,
+  "timestamp": 0.938,
+  "realTime": "2025-08-04T03:38:44.690Z",
+  "currentLap": 57,
+  "sessionStatus": "completed",
+  "drivers": [
+    {
+      "driverSessionId": 1,
+      "carNumber": 4,
+      "position": 1,
+      "lapNumber": 57,
+      "currentLapTime": 87126,
+      "sector1Time": 30396,
+      "sector2Time": 18664,
+      "sector3Time": 38066,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 1,
+        "number": 4,
+        "code": "NOR",
+        "fullName": "Lando Norris"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 2,
+      "carNumber": 1,
+      "position": 2,
+      "lapNumber": 57,
+      "currentLapTime": 87400,
+      "sector1Time": 30421,
+      "sector2Time": 18285,
+      "sector3Time": 38694,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 11,
+      "driver": {
+        "id": 2,
+        "number": 1,
+        "code": "VER",
+        "fullName": "Max Verstappen"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 3,
+      "carNumber": 63,
+      "position": 3,
+      "lapNumber": 57,
+      "currentLapTime": 89117,
+      "sector1Time": 31356,
+      "sector2Time": 18721,
+      "sector3Time": 39040,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 3,
+        "number": 63,
+        "code": "RUS",
+        "fullName": "George Russell"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 4,
+      "carNumber": 12,
+      "position": 4,
+      "lapNumber": 57,
+      "currentLapTime": 88650,
+      "sector1Time": 31048,
+      "sector2Time": 18709,
+      "sector3Time": 38893,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 4,
+        "number": 12,
+        "code": "ANT",
+        "fullName": "Kimi Antonelli"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 5,
+      "carNumber": 23,
+      "position": 5,
+      "lapNumber": 57,
+      "currentLapTime": 89944,
+      "sector1Time": 31494,
+      "sector2Time": 18857,
+      "sector3Time": 39593,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 5,
+        "number": 23,
+        "code": "ALB",
+        "fullName": "Alexander Albon"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 6,
+      "carNumber": 18,
+      "position": 6,
+      "lapNumber": 57,
+      "currentLapTime": 90957,
+      "sector1Time": 31819,
+      "sector2Time": 19209,
+      "sector3Time": 39929,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 6,
+        "number": 18,
+        "code": "STR",
+        "fullName": "Lance Stroll"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 7,
+      "carNumber": 27,
+      "position": 7,
+      "lapNumber": 57,
+      "currentLapTime": 90860,
+      "sector1Time": 31739,
+      "sector2Time": 19048,
+      "sector3Time": 40073,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 7,
+        "number": 27,
+        "code": "HUL",
+        "fullName": "Nico Hulkenberg"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 8,
+      "carNumber": 16,
+      "position": 8,
+      "lapNumber": 57,
+      "currentLapTime": 90964,
+      "sector1Time": 31616,
+      "sector2Time": 18907,
+      "sector3Time": 40441,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 10,
+      "driver": {
+        "id": 8,
+        "number": 16,
+        "code": "LEC",
+        "fullName": "Charles Leclerc"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 9,
+      "carNumber": 81,
+      "position": 9,
+      "lapNumber": 57,
+      "currentLapTime": 89517,
+      "sector1Time": 31475,
+      "sector2Time": 18119,
+      "sector3Time": 39923,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 9,
+        "number": 81,
+        "code": "PIA",
+        "fullName": "Oscar Piastri"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 10,
+      "carNumber": 44,
+      "position": 10,
+      "lapNumber": 57,
+      "currentLapTime": 92418,
+      "sector1Time": 31658,
+      "sector2Time": 18758,
+      "sector3Time": 42002,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 10,
+      "driver": {
+        "id": 10,
+        "number": 44,
+        "code": "HAM",
+        "fullName": "Lewis Hamilton"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 11,
+      "carNumber": 10,
+      "position": 11,
+      "lapNumber": 57,
+      "currentLapTime": 91312,
+      "sector1Time": 31774,
+      "sector2Time": 19075,
+      "sector3Time": 40463,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 11,
+      "driver": {
+        "id": 11,
+        "number": 10,
+        "code": "GAS",
+        "fullName": "Pierre Gasly"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 12,
+      "carNumber": 22,
+      "position": 12,
+      "lapNumber": 57,
+      "currentLapTime": 91511,
+      "sector1Time": 31959,
+      "sector2Time": 19035,
+      "sector3Time": 40517,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 10,
+      "driver": {
+        "id": 12,
+        "number": 22,
+        "code": "TSU",
+        "fullName": "Yuki Tsunoda"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    },
+    {
+      "driverSessionId": 13,
+      "carNumber": 31,
+      "position": 13,
+      "lapNumber": 57,
+      "currentLapTime": 90924,
+      "sector1Time": 32076,
+      "sector2Time": 19022,
+      "sector3Time": 39826,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 11,
+      "driver": {
+        "id": 13,
+        "number": 31,
+        "code": "OCO",
+        "fullName": "Esteban Ocon"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 14,
+      "carNumber": 87,
+      "position": 14,
+      "lapNumber": 57,
+      "currentLapTime": 90553,
+      "sector1Time": 31384,
+      "sector2Time": 19175,
+      "sector3Time": 39994,
+      "brake": 0,
+      "status": "Finished",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 13,
+      "driver": {
+        "id": 14,
+        "number": 38,
+        "code": "BEA",
+        "fullName": "Oliver Bearman"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 15,
+      "carNumber": 30,
+      "position": 15,
+      "lapNumber": 47,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "MEDIUM",
+      "tireAge": 14,
+      "driver": {
+        "id": 15,
+        "number": 30,
+        "code": "LAW",
+        "fullName": "Liam Lawson"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 16,
+      "carNumber": 5,
+      "position": 16,
+      "lapNumber": 46,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 2,
+      "driver": {
+        "id": 16,
+        "number": 5,
+        "code": "BOR",
+        "fullName": "Gabriel Bortoleto"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 17,
+      "carNumber": 14,
+      "position": 17,
+      "lapNumber": 33,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 33,
+      "driver": {
+        "id": 17,
+        "number": 14,
+        "code": "ALO",
+        "fullName": "Fernando Alonso"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 18,
+      "carNumber": 55,
+      "position": 18,
+      "lapNumber": 1,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 1,
+      "driver": {
+        "id": 18,
+        "number": 55,
+        "code": "SAI",
+        "fullName": "Carlos Sainz"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 19,
+      "carNumber": 7,
+      "position": 19,
+      "lapNumber": 1,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 1,
+      "driver": {
+        "id": 19,
+        "number": 7,
+        "code": "DOO",
+        "fullName": "Jack Doohan"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 20,
+      "carNumber": 6,
+      "position": 20,
+      "lapNumber": 1,
+      "brake": 0,
+      "status": "Retired",
+      "tireCompound": "INTERMEDIATE",
+      "tireAge": 1,
+      "driver": {
+        "id": 20,
+        "number": 6,
+        "code": "HAD",
+        "fullName": "Isack Hadjar"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    }
+  ]
+}
+[오후 12:38:44] 메시지 전송: replay-control -> {"type":"STOP","sessionId":1}
