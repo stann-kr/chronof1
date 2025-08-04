@@ -229,8 +229,8 @@ class ETLProcessor:
             return None
     
     def _process_session_data(self, year: int, round_num: int, session_type: str,
-                             session_id: int, live_session_id: int, 
-                             include_telemetry: bool) -> bool:
+        session_id: int, live_session_id: int, 
+        include_telemetry: bool) -> bool:
         """세션 데이터 처리 (드라이버, 랩, 텔레메트리 등)"""
         try:
             log.info(f"세션 데이터 처리 시작: {session_type}")
@@ -280,8 +280,8 @@ class ETLProcessor:
             return False
     
     def _process_driver_session(self, driver_result: Dict, live_session_id: int,
-                               year: int, round_num: int, session_type: str,
-                               include_telemetry: bool, session_obj) -> bool:
+        year: int, round_num: int, session_type: str,
+        include_telemetry: bool, session_obj) -> bool:
         """개별 드라이버 세션 데이터 처리"""
         try:
             # FastF1 DataFrame의 컬럼명 사용
@@ -364,6 +364,7 @@ class ETLProcessor:
                             pit_in=lap_dict.get('PitIn'),
                             pit_out=lap_dict.get('PitOut'),
                             position=self._safe_int(lap_dict.get('Position')),
+                            sessionTime=self._safe_float(lap_dict.get('Time')),
                             lap_start_time=self._safe_datetime(lap_dict.get('LapStartTime'), session_start_time),
                             lap_start_date=self._safe_datetime(lap_dict.get('LapStartDate'), session_start_time),
                             sector1_session_time=self._safe_float(lap_dict.get('Sector1SessionTime')),
@@ -433,7 +434,8 @@ class ETLProcessor:
                     driver_pitstops = pitstop_data
                 
                 if not driver_pitstops.empty:
-                    inserted_count = self.live_repo.insert_pit_stop_data(driver_session_id, driver_pitstops)
+                    session_start_time = getattr(session_obj, 'date', None)
+                    inserted_count = self.live_repo.insert_pit_stop_data(driver_session_id, driver_pitstops, session_start_time)
                     log.debug(f"드라이버 {driver_number}: {inserted_count}개 피트스톱 데이터 처리")
         except Exception as e:
             log.warning(f"드라이버 {driver_number} 피트스톱 데이터 처리 실패: {e}")

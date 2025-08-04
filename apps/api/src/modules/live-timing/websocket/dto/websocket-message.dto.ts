@@ -80,6 +80,9 @@ export interface DriverTimingData {
   
   /** DRS 상태 (0=사용불가, 1=사용가능, 2=활성화) */
   drs?: number;
+
+  /** 앞 차와의 거리 (미터) */
+  distanceToDriverAhead?: number;
   
   /** 위치 데이터 */
   positionData?: {
@@ -117,10 +120,7 @@ export interface TimingUpdateMessage {
   sessionId: number;
   
   /** 타임스탬프 (세션 시작 후 경과 초) */
-  timestamp: number;
-  
-  /** 실제 시간 (ISO 문자열) */
-  realTime: string;
+  sessionTime: number;
   
   /** 현재 랩 번호 */
   currentLap?: number;
@@ -153,6 +153,7 @@ export interface SessionInfoMessage {
     date: string;
     duration?: number;
     status?: string;
+    maxSessionTime?: number; // 세션의 최대 시간 (초)
   };
   
   /** 이벤트 정보 */

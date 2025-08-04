@@ -190,7 +190,7 @@ export class LiveTimingGateway implements OnGatewayConnection, OnGatewayDisconne
             clientId, 
             sessionId, 
             (data) => this.sendTimingUpdate(client, data),
-            data.speed
+            data.speed,
           );
           break;
           
@@ -230,6 +230,16 @@ export class LiveTimingGateway implements OnGatewayConnection, OnGatewayDisconne
    */
   private sendTimingUpdate(client: Socket, data: TimingUpdateMessage): void {
     client.emit('message', data);
+  }
+
+  /**
+   * 타이밍 업데이트 브로드캐스팅
+   * 
+   * @param sessionId 세션 ID
+   * @param data 타이밍 데이터
+   */
+  broadcastTimingUpdate(sessionId: number, data: TimingUpdateMessage): void {
+    this.server.to(`session-${sessionId}`).emit('message', data);
   }
 
   /**

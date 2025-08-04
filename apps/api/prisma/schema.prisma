@@ -237,6 +237,7 @@ model LiveLap {
   sector3Time    Float?          @map("sector3_time") // 섹터 3 시간 (초)
   
   // 세션 시간 데이터 (FastF1 추가 필드)
+  sessionTime    Float?          @map("session_time") // 세션 시작부터의 시간 (초)
   lapStartTime   DateTime?       @map("lap_start_time") // 랩 시작 시간
   lapStartDate   DateTime?       @map("lap_start_date") // 랩 시작 날짜
   sector1SessionTime Float?      @map("sector1_session_time") // 섹터1 완료 세션 시간
@@ -321,6 +322,8 @@ model LivePitStop {
   driverSessionId Int             @map("driver_session_id")
   lapNumber       Int             @map("lap_number") // 피트스톱 랩 번호
   
+  timestamp       DateTime?       @map("timestamp") // 피트스톱 발생 시간
+  sessionTime     Float?          @map("session_time") // 세션 시작부터의 시간 (초)
   stopTime        Float?          @map("stop_time") // 피트스톱 시간 (초)
   stopTimeString  String?         @map("stop_time_string") // 형식화된 피트스톱 시간
   totalDuration   Float?          @map("total_duration") // 전체 피트스톱 소요 시간 (피트 레인 포함)
@@ -355,6 +358,7 @@ model LivePositionData {
   id              Int             @id @default(autoincrement())
   driverSessionId Int             @map("driver_session_id")
   timestamp       DateTime        @map("timestamp") // 데이터 타임스탬프
+  sessionTime     Float?          @map("session_time") // 세션 시작부터의 시간 (초)
   
   x               Float           @map("x") // X 좌표
   y               Float           @map("y") // Y 좌표
@@ -373,6 +377,7 @@ model LiveWeatherData {
   id              Int           @id @default(autoincrement())
   sessionId       Int           @map("session_id")
   timestamp       DateTime      @map("timestamp") // 데이터 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
   
   airTemp         Float?        @map("air_temp") // 기온 (°C)
   trackTemp       Float?        @map("track_temp") // 트랙 온도 (°C)
@@ -394,6 +399,7 @@ model LiveSessionMessage {
   id              Int           @id @default(autoincrement())
   sessionId       Int           @map("session_id")
   timestamp       DateTime      @map("timestamp") // 메시지 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
   
   category        String?       @map("category") // 메시지 카테고리 (FLAG, SAFETY_CAR, VSC 등)
   message         String        @map("message") // 메시지 내용
@@ -413,6 +419,7 @@ model LiveSessionStatus {
   id              Int           @id @default(autoincrement())
   sessionId       Int           @map("session_id")
   timestamp       DateTime      @map("timestamp") // 상태 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
   
   status          String        @map("status") // 세션 상태 (Started, Aborted, Finished 등)
   timeRemaining   Int?          @map("time_remaining") // 남은 시간 (초)
@@ -430,6 +437,7 @@ model LiveTrackStatus {
   id              Int           @id @default(autoincrement())
   sessionId       Int           @map("session_id")
   timestamp       DateTime      @map("timestamp") // 상태 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
   
   status          String        @map("status") // 트랙 상태 번호 (1=Green, 2=Yellow, 4=SC, 6=VSC, 7=Red)
   message         String?       @map("message") // 상태 메시지

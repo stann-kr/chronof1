@@ -18,12 +18,14 @@ export class ReplayService {
   // 현재 재생 중인 세션들을 관리
   private readonly activeSessions = new Map<string, {
     sessionId: number;
-    startTime: number;       // 재생 시작 시간 (ms)
-    currentTime: number;     // 현재 재생 시간 (ms)
-    playbackRate: number;    // 재생 속도 (1 = 정상, 2 = 2배속, 0.5 = 절반 속도)
-    intervalId?: NodeJS.Timeout; // 타이머 ID
-    dataCallback: (data: TimingUpdateMessage) => void; // 데이터 콜백 함수
-    paused: boolean;         // 일시정지 상태
+    sessionStartTime: number;  // 세션 실제 시작 시간 (ms)
+    replayStartTime: number;   // 리플레이 시작 시간 (ms)
+    currentTime: number;       // 현재 리플레이 시간 (ms)
+    playbackRate: number;    // 재생 속도
+    intervalId?: NodeJS.Timeout;
+    dataCallback: (data: TimingUpdateMessage) => void;
+    paused: boolean;
+    maxSessionTime: number; // 세션의 최대 시간 (초)
   }>();
 
   constructor(private readonly prisma: PrismaService) {}
@@ -52,6 +54,17 @@ export class ReplayService {
         throw new Error(`세션을 찾을 수 없습니다: ${sessionId}`);
       }
 
+      // 세션의 최대 시간 조회
+      const maxTimeResult = await this.prisma.liveTelemetryData.aggregate({
+        _max: { sessionTime: true },
+        where: {
+          driverSession: {
+            sessionId: { equals: sessionId },
+          },
+        },
+      });
+      const maxSessionTime = maxTimeResult?._max?.sessionTime || 0;
+
       // 응답 형식에 맞게 데이터 변환
       return {
         session: {
@@ -60,7 +73,8 @@ export class ReplayService {
           type: session.type,
           date: session.date.toISOString(),
           duration: session.duration ?? undefined,
-          status: session.status ?? undefined
+          status: session.status ?? undefined,
+          maxSessionTime,
         },
         event: {
           id: session.event.id,
@@ -100,23 +114,35 @@ export class ReplayService {
     }
 
     try {
-      // 세션 유효성 검사
-      const sessionExists = await this.prisma.commonSession.findUnique({
-        where: { id: sessionId }
+      const session = await this.prisma.commonSession.findUnique({
+        where: { id: sessionId },
       });
 
-      if (!sessionExists) {
+      if (!session) {
         throw new Error(`세션을 찾을 수 없습니다: ${sessionId}`);
       }
+
+      // 세션의 최대 시간 조회
+      const maxTimeResult = await this.prisma.liveTelemetryData.aggregate({
+        _max: { sessionTime: true },
+        where: {
+          driverSession: {
+            sessionId: { equals: sessionId },
+          },
+        },
+      });
+      const maxSessionTime = maxTimeResult?._max?.sessionTime || 0;
 
       // 재생 세션 초기화
       const replaySession = {
         sessionId,
-        startTime: Date.now(),
-        currentTime: 0, // 세션 시작부터 재생
+        sessionStartTime: session.date.getTime(),
+        replayStartTime: Date.now(),
+        currentTime: 0,
         playbackRate,
         dataCallback,
-        paused: false
+        paused: false,
+        maxSessionTime,
       };
 
       // 세션 저장
@@ -146,7 +172,7 @@ export class ReplayService {
     
     // 이미 일시정지 상태인 경우 재개
     if (session.paused) {
-      session.startTime = Date.now() - session.currentTime;
+      session.replayStartTime = Date.now() - session.currentTime;
       session.paused = false;
       this.scheduleNextUpdate(clientId);
       this.logger.log(`클라이언트 ${clientId}의 재생 재개 (시간: ${session.currentTime / 1000}s)`);
@@ -158,7 +184,7 @@ export class ReplayService {
       }
       
       // 현재 시간 저장
-      session.currentTime = Date.now() - session.startTime;
+      session.currentTime = Date.now() - session.replayStartTime;
       session.paused = true;
       this.logger.log(`클라이언트 ${clientId}의 재생 일시정지 (시간: ${session.currentTime / 1000}s)`);
     }
@@ -207,7 +233,7 @@ export class ReplayService {
     
     // 시간 업데이트 (ms로 변환)
     const seekTimeMs = timestamp * 1000;
-    session.startTime = Date.now() - seekTimeMs;
+    session.replayStartTime = Date.now() - seekTimeMs;
     session.currentTime = seekTimeMs;
     
     this.logger.log(`클라이언트 ${clientId}의 재생 시간 이동: ${timestamp}초`);
@@ -238,8 +264,8 @@ export class ReplayService {
     
     // 현재 시간 업데이트
     if (!session.paused) {
-      session.currentTime = Date.now() - session.startTime;
-      session.startTime = Date.now() - session.currentTime;
+      session.currentTime = Date.now() - session.replayStartTime;
+      session.replayStartTime = Date.now() - session.currentTime;
     }
     
     // 속도 업데이트
@@ -259,29 +285,36 @@ export class ReplayService {
    * 
    * @param clientId 클라이언트 ID
    */
-  private scheduleNextUpdate(clientId: string) {
+  private async scheduleNextUpdate(clientId: string) {
     const session = this.activeSessions.get(clientId);
     
     if (!session || session.paused) {
       return;
     }
     
-    // 현재 시간 계산
-    const elapsedMs = Date.now() - session.startTime;
+    const elapsedMs = (Date.now() - session.replayStartTime) * session.playbackRate;
     session.currentTime = elapsedMs;
+
+    const sessionTimeSec = elapsedMs / 1000;
+
+    if (sessionTimeSec > session.maxSessionTime) {
+      this.logger.log(`세션 ${session.sessionId} 리플레이 종료`);
+      this.stopReplay(clientId);
+      const finalData = await this.getTimingDataForTimestamp(session.sessionId, session.maxSessionTime);
+      finalData.sessionStatus = 'FINISHED';
+      session.dataCallback(finalData);
+      return;
+    }
     
-    // 타이밍 데이터 조회 및 전송
-    this.fetchAndSendTimingData(clientId, session.sessionId, elapsedMs / 1000)
-      .then(() => {
-        // 다음 업데이트 예약 (100ms 간격, 재생 속도 적용)
-        const updateInterval = 100 / session.playbackRate;
-        session.intervalId = setTimeout(() => {
-          this.scheduleNextUpdate(clientId);
-        }, updateInterval);
-      })
-      .catch(error => {
-        this.logger.error(`타이밍 데이터 조회 중 오류: ${error instanceof Error ? error.message : String(error)}`);
-      });
+    try {
+      await this.fetchAndSendTimingData(clientId, session.sessionId, sessionTimeSec);
+      const updateInterval = 100 / session.playbackRate;
+      session.intervalId = setTimeout(() => {
+        this.scheduleNextUpdate(clientId);
+      }, updateInterval);
+    } catch (error) {
+      this.logger.error(`타이밍 데이터 조회 중 오류: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 
   /**
@@ -289,9 +322,9 @@ export class ReplayService {
    * 
    * @param clientId 클라이언트 ID
    * @param sessionId 세션 ID
-   * @param timestamp 시간 (초)
+   * @param timestamp 세션 시작부터의 경과 시간 (초)
    */
-  private async fetchAndSendTimingData(clientId: string, sessionId: number, timestamp: number): Promise<void> {
+  private async fetchAndSendTimingData(clientId: string, sessionId: number, sessionTime: number): Promise<void> {
     const session = this.activeSessions.get(clientId);
     
     if (!session) {
@@ -299,154 +332,134 @@ export class ReplayService {
     }
     
     try {
-      // 세션 정보 조회
-      const sessionInfo = await this.prisma.commonSession.findUnique({
-        where: { id: sessionId }
-      });
-      
-      if (!sessionInfo) {
-        throw new Error(`세션을 찾을 수 없습니다: ${sessionId}`);
-      }
-
-      // LiveSession 정보 조회 
-      const liveSession = await this.prisma.liveSession.findFirst({
-        where: { commonSessionId: sessionId }
-      });
-      
-      if (!liveSession) {
-        throw new Error(`라이브 세션을 찾을 수 없습니다: sessionId = ${sessionId}`);
-      }
-      
-      // 드라이버 세션 정보 조회
-      const driverSessions = await this.prisma.liveDriverSession.findMany({
-        where: { sessionId: liveSession.id },
-        include: {
-          driver: true,
-          team: true
-        }
-      });
-
-      // 타이밍 데이터 준비 (LiveTelemetryData, LivePositionData 조회)
-      const driversData: DriverTimingData[] = [];
-      
-      // 각 드라이버별로 데이터 조회 및 가공
-      for (const driverSession of driverSessions) {
-        // 해당 시간대의 텔레메트리 데이터 조회
-        const telemetry = await this.prisma.liveTelemetryData.findFirst({
-          where: {
-            driverSessionId: driverSession.id,
-            sessionTime: {
-              // 타임스탬프는 초 단위로 저장되므로, 현재 시간 ±0.5초 범위 내의 데이터 조회
-              gte: timestamp - 0.5,
-              lte: timestamp + 0.5
-            }
-          },
-          orderBy: {
-            sessionTime: 'asc'
-          }
-        });
-        
-        // 해당 시간대의 위치 데이터 조회
-        const position = await this.prisma.livePositionData.findFirst({
-          where: {
-            driverSessionId: driverSession.id,
-            // 타임스탬프로 검색 (Prisma에서는 timestamp가 DateTime 타입이므로 적절히 변환 필요)
-            timestamp: {
-              // 여기서는 근사치로 조회 (실제 구현시 세션 시작 시간 기준으로 계산 필요)
-              gte: new Date(Date.now() - 1000), // 현재 시간 기준 1초 전
-              lte: new Date() // 현재 시간
-            }
-          },
-          orderBy: {
-            timestamp: 'desc'
-          }
-        });
-        
-        // 현재 랩 정보 조회
-        const currentLap = await this.prisma.liveLap.findFirst({
-          where: {
-            driverSessionId: driverSession.id,
-            // lapNumber 기준으로 가장 최근 랩 조회
-          },
-          orderBy: {
-            lapNumber: 'desc'
-          }
-        });
-        
-        // 드라이버 타이밍 데이터 구성
-        const driverTimingData: DriverTimingData = {
-          driverSessionId: driverSession.id,
-          carNumber: driverSession.carNumber,
-          position: driverSession.position ?? undefined,
-          lapNumber: currentLap?.lapNumber ?? undefined,
-          currentLapTime: currentLap?.lapTime ? currentLap.lapTime * 1000 : undefined, // 초 -> 밀리초 변환
-          bestLapTime: undefined, // 최고 랩 타임 데이터 필요
-          lastLapTime: undefined, // 이전 랩 타임 데이터 필요
-          sector1Time: currentLap?.sector1Time ? currentLap.sector1Time * 1000 : undefined,
-          sector2Time: currentLap?.sector2Time ? currentLap.sector2Time * 1000 : undefined,
-          sector3Time: currentLap?.sector3Time ? currentLap.sector3Time * 1000 : undefined,
-          
-          // 텔레메트리 데이터
-          speed: telemetry?.speed ?? undefined,
-          throttle: telemetry?.throttle ?? undefined,
-          brake: telemetry?.brake ? 100 : 0, // 불리언 -> 숫자 변환
-          gear: telemetry?.gear ?? undefined,
-          rpm: telemetry?.rpm ?? undefined,
-          drs: telemetry?.drs ?? undefined,
-          
-          // 위치 데이터
-          positionData: position ? {
-            x: position.x,
-            y: position.y,
-            z: position.z ?? undefined,
-            angle: undefined // 현재 스키마에 angle 필드 없음
-          } : undefined,
-          
-          // 상태 정보
-          status: driverSession.status ?? 'UNKNOWN',
-          tireCompound: currentLap?.tyreCompound ?? undefined,
-          tireAge: currentLap?.tyreLife ?? undefined,
-          
-          // 드라이버 정보
-          driver: {
-            id: driverSession.driver.id,
-            number: driverSession.driver.number || undefined,
-            code: driverSession.driver.code,
-            fullName: `${driverSession.driver.fullName}`
-          },
-          
-          // 팀 정보
-          team: {
-            id: driverSession.team.id,
-            name: driverSession.team.name,
-            shortName: driverSession.team.shortName || undefined,
-            color: driverSession.team.color || undefined
-          }
-        };
-        
-        driversData.push(driverTimingData);
-      }
-      
-      // 클라이언트에 전송할 메시지 구성
-      const message: TimingUpdateMessage = {
-        type: 'TIMING_UPDATE',
-        sessionId,
-        timestamp,
-        realTime: new Date().toISOString(),
-        currentLap: driversData.length > 0 
-          ? Math.max(...driversData.map(d => d.lapNumber || 0)) 
-          : undefined,
-        totalLaps: undefined, // 총 랩 수 데이터 필요
-        sessionStatus: sessionInfo.status || 'UNKNOWN',
-        drivers: driversData
-      };
+      const timingData = await this.getTimingDataForTimestamp(sessionId, sessionTime);
       
       // 콜백 함수를 통해 메시지 전송
-      session.dataCallback(message);
+      session.dataCallback(timingData);
+      
+      // 디버깅 로그 추가
+      this.logger.debug(`세션 ${sessionId}, 시간 ${sessionTime}초: 드라이버 ${timingData.drivers.length}명 데이터 전송`);
       
     } catch (error) {
       this.logger.error(`타이밍 데이터 조회 중 오류: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
     }
+  }
+
+  async getTimingDataForTimestamp(sessionId: number, sessionTime: number): Promise<TimingUpdateMessage> {
+    // 세션 정보 조회
+    const sessionInfo = await this.prisma.commonSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!sessionInfo) {
+      throw new Error(`세션을 찾을 수 없습니다: ${sessionId}`);
+    }
+
+    // LiveSession 정보 조회
+    const liveSession = await this.prisma.liveSession.findFirst({
+      where: { commonSessionId: sessionId },
+    });
+
+    if (!liveSession) {
+      this.logger.warn(`라이브 세션을 찾을 수 없습니다: sessionId = ${sessionId}`);
+      return {
+        type: 'TIMING_UPDATE',
+        sessionId,
+        sessionTime,
+        sessionStatus: sessionInfo.status || 'UNKNOWN',
+        drivers: [],
+      };
+    }
+
+    // 드라이버 세션 정보 조회
+    const driverSessions = await this.prisma.liveDriverSession.findMany({
+      where: { sessionId: liveSession.id },
+      include: { driver: true, team: true },
+    });
+
+    const driversData: DriverTimingData[] = await Promise.all(
+      driverSessions.map(async (driverSession) => {
+        const telemetry = await this.prisma.liveTelemetryData.findFirst({
+          where: {
+            driverSessionId: driverSession.id,
+            sessionTime: { gte: sessionTime },
+          },
+          orderBy: { sessionTime: 'asc' },
+        });
+
+        const position = await this.prisma.livePositionData.findFirst({
+          where: {
+            driverSessionId: driverSession.id,
+            sessionTime: { gte: sessionTime },
+          },
+          orderBy: { sessionTime: 'asc' },
+        });
+
+        const currentLap = await this.prisma.liveLap.findFirst({
+          where: {
+            driverSessionId: driverSession.id,
+            sessionTime: { lte: sessionTime },
+          },
+          orderBy: { sessionTime: 'desc' },
+        });
+
+        // 동적 상태 결정 로직
+        let dynamicStatus = 'On Track';
+        if (currentLap?.pitInTime && !currentLap.pitOutTime) {
+          dynamicStatus = 'In Pits';
+        } else if (driverSession.status && !['Finished', '+1 Lap', '+2 Laps'].includes(driverSession.status)) {
+          dynamicStatus = driverSession.status;
+        }
+
+        return {
+          driverSessionId: driverSession.id,
+          carNumber: driverSession.carNumber,
+          position: driverSession.position ?? undefined,
+          lapNumber: currentLap?.lapNumber ?? 1,
+          currentLapTime: currentLap?.lapTime ? currentLap.lapTime * 1000 : undefined,
+          bestLapTime: undefined,
+          lastLapTime: undefined,
+          sector1Time: currentLap?.sector1Time ? currentLap.sector1Time * 1000 : undefined,
+          sector2Time: currentLap?.sector2Time ? currentLap.sector2Time * 1000 : undefined,
+          sector3Time: currentLap?.sector3Time ? currentLap.sector3Time * 1000 : undefined,
+          speed: telemetry?.speed ? Number(telemetry.speed) : undefined,
+          throttle: telemetry?.throttle ? Number(telemetry.throttle) : undefined,
+          brake: telemetry?.brake ? Number(telemetry.brake) : undefined,
+          gear: telemetry?.gear ? Number(telemetry.gear) : undefined,
+          rpm: telemetry?.rpm ? Number(telemetry.rpm) : undefined,
+          drs: telemetry?.drs ? Number(telemetry.drs) : undefined,
+          distanceToDriverAhead: telemetry?.distanceToDriverAhead ? Number(telemetry.distanceToDriverAhead) : undefined,
+          positionData: position
+            ? { x: Number(position.x), y: Number(position.y), z: position.z ? Number(position.z) : undefined }
+            : undefined,
+          status: dynamicStatus,
+          tireCompound: currentLap?.tyreCompound ?? undefined,
+          tireAge: currentLap?.tyreLife ?? undefined,
+          driver: {
+            id: driverSession.driver.id,
+            number: driverSession.driver.number || undefined,
+            code: driverSession.driver.code,
+            fullName: driverSession.driver.fullName,
+          },
+          team: {
+            id: driverSession.team.id,
+            name: driverSession.team.name,
+            shortName: driverSession.team.shortName || undefined,
+            color: driverSession.team.color || undefined,
+          },
+        };
+      }),
+    );
+
+    return {
+      type: 'TIMING_UPDATE',
+      sessionId,
+      sessionTime,
+      currentLap: driversData.length > 0 ? Math.max(...driversData.map((d) => d.lapNumber || 1)) : 1,
+      totalLaps: undefined,
+      sessionStatus: 'ACTIVE',
+      drivers: driversData,
+    };
   }
 }

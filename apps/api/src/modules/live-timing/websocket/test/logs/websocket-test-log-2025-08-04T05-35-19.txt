@@ -1,0 +1,2202 @@
+[오후 2:35:13] 메시지 전송: replay-control -> {"type":"START","sessionId":1,"speed":1}
+[오후 2:35:13] 서버 메시지: {
+  "type": "TIMING_UPDATE",
+  "sessionId": 1,
+  "sessionTime": 0,
+  "currentLap": 1,
+  "sessionStatus": "completed",
+  "drivers": [
+    {
+      "driverSessionId": 1,
+      "carNumber": 4,
+      "position": 1,
+      "lapNumber": 1,
+      "throttle": 18,
+      "gear": 2,
+      "rpm": 9504.34495104,
+      "drs": 1,
+      "positionData": {
+        "x": -1046.23530717133,
+        "y": -1475.761342034877,
+        "z": 86.0003242012481
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 1,
+        "number": 4,
+        "code": "NOR",
+        "fullName": "Lando Norris"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 2,
+      "carNumber": 1,
+      "position": 2,
+      "lapNumber": 1,
+      "throttle": 16,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10114.3998848,
+      "drs": 1,
+      "positionData": {
+        "x": -941.0836310659512,
+        "y": -1575.858788809488,
+        "z": 86.00000009135128
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 2,
+        "number": 1,
+        "code": "VER",
+        "fullName": "Max Verstappen"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 3,
+      "carNumber": 63,
+      "position": 3,
+      "lapNumber": 1,
+      "throttle": 20,
+      "gear": 2,
+      "rpm": 8906.749952,
+      "drs": 1,
+      "positionData": {
+        "x": -903.1910051438549,
+        "y": -1611.808659289727,
+        "z": 86.94875250465027
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 3,
+        "number": 63,
+        "code": "RUS",
+        "fullName": "George Russell"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 4,
+      "carNumber": 12,
+      "position": 4,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 9068.2250432,
+      "drs": 1,
+      "positionData": {
+        "x": -207.2370539526009,
+        "y": -2276.814239605645,
+        "z": 91.00000000326125
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 4,
+        "number": 12,
+        "code": "ANT",
+        "fullName": "Kimi Antonelli"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 5,
+      "carNumber": 23,
+      "position": 5,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 8436.75999232,
+      "drs": 1,
+      "positionData": {
+        "x": -807.2310856105729,
+        "y": -1702.765563165368,
+        "z": 87.99995381125913
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 5,
+        "number": 23,
+        "code": "ALB",
+        "fullName": "Alexander Albon"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 6,
+      "carNumber": 18,
+      "position": 6,
+      "lapNumber": 1,
+      "throttle": 23.40500096,
+      "gear": 2,
+      "rpm": 8658.83993088,
+      "drs": 1,
+      "positionData": {
+        "x": -388.6644518383193,
+        "y": -2099.862145990399,
+        "z": 90.0000000913513
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 6,
+        "number": 18,
+        "code": "STR",
+        "fullName": "Lance Stroll"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 7,
+      "carNumber": 27,
+      "position": 7,
+      "lapNumber": 1,
+      "throttle": 25,
+      "gear": 2,
+      "rpm": 10643.2750528,
+      "drs": 1,
+      "positionData": {
+        "x": -171.2386227653123,
+        "y": -2312.761052847725,
+        "z": 90.00190929478748
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 7,
+        "number": 27,
+        "code": "HUL",
+        "fullName": "Nico Hulkenberg"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 8,
+      "carNumber": 16,
+      "position": 8,
+      "lapNumber": 1,
+      "throttle": 25,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 9531.63004416,
+      "drs": 1,
+      "positionData": {
+        "x": -721.0922151131832,
+        "y": -1783.960936290331,
+        "z": 88.00000009082598
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 8,
+        "number": 16,
+        "code": "LEC",
+        "fullName": "Charles Leclerc"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 9,
+      "carNumber": 81,
+      "position": 9,
+      "lapNumber": 1,
+      "throttle": 19,
+      "gear": 2,
+      "rpm": 9666.03504512,
+      "drs": 1,
+      "positionData": {
+        "x": -988.1034372298891,
+        "y": -1530.893251469648,
+        "z": 85.99999956264658
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 9,
+        "number": 81,
+        "code": "PIA",
+        "fullName": "Oscar Piastri"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 10,
+      "carNumber": 44,
+      "position": 10,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 9412.5751104,
+      "drs": 1,
+      "positionData": {
+        "x": -666.1417483254859,
+        "y": -1836.860201862558,
+        "z": 88.0000000035137
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 10,
+        "number": 44,
+        "code": "HAM",
+        "fullName": "Lewis Hamilton"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 11,
+      "carNumber": 10,
+      "position": 11,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 10975.67986176,
+      "drs": 1,
+      "positionData": {
+        "x": -622.2389416782236,
+        "y": -1878.757382363954,
+        "z": 88.9487525054167
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 11,
+        "number": 10,
+        "code": "GAS",
+        "fullName": "Pierre Gasly"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 12,
+      "carNumber": 22,
+      "position": 12,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10132.87990016,
+      "drs": 1,
+      "positionData": {
+        "x": -848.1910920686228,
+        "y": -1663.860202304496,
+        "z": 87.00000566706933
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 12,
+        "number": 22,
+        "code": "TSU",
+        "fullName": "Yuki Tsunoda"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    },
+    {
+      "driverSessionId": 13,
+      "carNumber": 31,
+      "position": 13,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 10714.39496064,
+      "drs": 1,
+      "positionData": {
+        "x": -30.99451405895481,
+        "y": -2450.000276737655,
+        "z": 90.00000000054078
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 13,
+        "number": 31,
+        "code": "OCO",
+        "fullName": "Esteban Ocon"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 14,
+      "carNumber": 87,
+      "position": 14,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3557.17995776,
+      "drs": 1,
+      "positionData": {
+        "x": -1167,
+        "y": -1159,
+        "z": 82
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 14,
+        "number": 38,
+        "code": "BEA",
+        "fullName": "Oliver Bearman"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 15,
+      "carNumber": 30,
+      "position": 15,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3472.0500096,
+      "drs": 1,
+      "positionData": {
+        "x": -1203,
+        "y": -1124,
+        "z": 87.99999999999999
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 15,
+        "number": 30,
+        "code": "LAW",
+        "fullName": "Liam Lawson"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 16,
+      "carNumber": 5,
+      "position": 16,
+      "lapNumber": 1,
+      "throttle": 29,
+      "gear": 2,
+      "rpm": 10638.00511616,
+      "drs": 1,
+      "positionData": {
+        "x": -286.1418531073721,
+        "y": -2200.858517717064,
+        "z": 90.99999956264747
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 16,
+        "number": 5,
+        "code": "BOR",
+        "fullName": "Gabriel Bortoleto"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 17,
+      "carNumber": 14,
+      "position": 17,
+      "lapNumber": 1,
+      "throttle": 23.59499904,
+      "gear": 2,
+      "rpm": 8688.43000576,
+      "drs": 1,
+      "positionData": {
+        "x": -447.2420100083048,
+        "y": -2044.808907937485,
+        "z": 89.99995384198766
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 17,
+        "number": 14,
+        "code": "ALO",
+        "fullName": "Fernando Alonso"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 18,
+      "carNumber": 55,
+      "position": 18,
+      "lapNumber": 1,
+      "throttle": 22,
+      "gear": 2,
+      "rpm": 8967.06004992,
+      "drs": 1,
+      "positionData": {
+        "x": -561.0888743368481,
+        "y": -1936.913023467158,
+        "z": 88.9999995626466
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 18,
+        "number": 55,
+        "code": "SAI",
+        "fullName": "Carlos Sainz"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 19,
+      "carNumber": 7,
+      "position": 19,
+      "lapNumber": 1,
+      "throttle": 24,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 11197.81511808,
+      "drs": 1,
+      "positionData": {
+        "x": -312.9908978502705,
+        "y": -2174.003477057277,
+        "z": 91.00000566629156
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 19,
+        "number": 7,
+        "code": "DOO",
+        "fullName": "Jack Doohan"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 20,
+      "carNumber": 6,
+      "position": 20,
+      "lapNumber": 1,
+      "throttle": 104,
+      "brake": 1,
+      "drs": 1,
+      "positionData": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 20,
+        "number": 6,
+        "code": "HAD",
+        "fullName": "Isack Hadjar"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    }
+  ]
+}
+[오후 2:35:14] 서버 메시지: {
+  "type": "TIMING_UPDATE",
+  "sessionId": 1,
+  "sessionTime": 0.521,
+  "currentLap": 1,
+  "sessionStatus": "completed",
+  "drivers": [
+    {
+      "driverSessionId": 1,
+      "carNumber": 4,
+      "position": 1,
+      "lapNumber": 1,
+      "throttle": 18,
+      "gear": 2,
+      "rpm": 9504.34495104,
+      "drs": 1,
+      "positionData": {
+        "x": -1046.23530717133,
+        "y": -1475.761342034877,
+        "z": 86.0003242012481
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 1,
+        "number": 4,
+        "code": "NOR",
+        "fullName": "Lando Norris"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 2,
+      "carNumber": 1,
+      "position": 2,
+      "lapNumber": 1,
+      "throttle": 16,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10114.3998848,
+      "drs": 1,
+      "positionData": {
+        "x": -941.0836310659512,
+        "y": -1575.858788809488,
+        "z": 86.00000009135128
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 2,
+        "number": 1,
+        "code": "VER",
+        "fullName": "Max Verstappen"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 3,
+      "carNumber": 63,
+      "position": 3,
+      "lapNumber": 1,
+      "throttle": 20,
+      "gear": 2,
+      "rpm": 8906.749952,
+      "drs": 1,
+      "positionData": {
+        "x": -903.1910051438549,
+        "y": -1611.808659289727,
+        "z": 86.94875250465027
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 3,
+        "number": 63,
+        "code": "RUS",
+        "fullName": "George Russell"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 4,
+      "carNumber": 12,
+      "position": 4,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 9068.2250432,
+      "drs": 1,
+      "positionData": {
+        "x": -207.2370539526009,
+        "y": -2276.814239605645,
+        "z": 91.00000000326125
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 4,
+        "number": 12,
+        "code": "ANT",
+        "fullName": "Kimi Antonelli"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 5,
+      "carNumber": 23,
+      "position": 5,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 8436.75999232,
+      "drs": 1,
+      "positionData": {
+        "x": -807.2310856105729,
+        "y": -1702.765563165368,
+        "z": 87.99995381125913
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 5,
+        "number": 23,
+        "code": "ALB",
+        "fullName": "Alexander Albon"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 6,
+      "carNumber": 18,
+      "position": 6,
+      "lapNumber": 1,
+      "throttle": 23.40500096,
+      "gear": 2,
+      "rpm": 8658.83993088,
+      "drs": 1,
+      "positionData": {
+        "x": -388.6644518383193,
+        "y": -2099.862145990399,
+        "z": 90.0000000913513
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 6,
+        "number": 18,
+        "code": "STR",
+        "fullName": "Lance Stroll"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 7,
+      "carNumber": 27,
+      "position": 7,
+      "lapNumber": 1,
+      "throttle": 25,
+      "gear": 2,
+      "rpm": 10643.2750528,
+      "drs": 1,
+      "positionData": {
+        "x": -171.2386227653123,
+        "y": -2312.761052847725,
+        "z": 90.00190929478748
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 7,
+        "number": 27,
+        "code": "HUL",
+        "fullName": "Nico Hulkenberg"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 8,
+      "carNumber": 16,
+      "position": 8,
+      "lapNumber": 1,
+      "throttle": 25,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 9531.63004416,
+      "drs": 1,
+      "positionData": {
+        "x": -721.0922151131832,
+        "y": -1783.960936290331,
+        "z": 88.00000009082598
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 8,
+        "number": 16,
+        "code": "LEC",
+        "fullName": "Charles Leclerc"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 9,
+      "carNumber": 81,
+      "position": 9,
+      "lapNumber": 1,
+      "throttle": 19,
+      "gear": 2,
+      "rpm": 9666.03504512,
+      "drs": 1,
+      "positionData": {
+        "x": -988.1034372298891,
+        "y": -1530.893251469648,
+        "z": 85.99999956264658
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 9,
+        "number": 81,
+        "code": "PIA",
+        "fullName": "Oscar Piastri"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 10,
+      "carNumber": 44,
+      "position": 10,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 9412.5751104,
+      "drs": 1,
+      "positionData": {
+        "x": -666.1417483254859,
+        "y": -1836.860201862558,
+        "z": 88.0000000035137
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 10,
+        "number": 44,
+        "code": "HAM",
+        "fullName": "Lewis Hamilton"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 11,
+      "carNumber": 10,
+      "position": 11,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 10975.67986176,
+      "drs": 1,
+      "positionData": {
+        "x": -622.2389416782236,
+        "y": -1878.757382363954,
+        "z": 88.9487525054167
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 11,
+        "number": 10,
+        "code": "GAS",
+        "fullName": "Pierre Gasly"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 12,
+      "carNumber": 22,
+      "position": 12,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10132.87990016,
+      "drs": 1,
+      "positionData": {
+        "x": -848.1910920686228,
+        "y": -1663.860202304496,
+        "z": 87.00000566706933
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 12,
+        "number": 22,
+        "code": "TSU",
+        "fullName": "Yuki Tsunoda"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    },
+    {
+      "driverSessionId": 13,
+      "carNumber": 31,
+      "position": 13,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 10714.39496064,
+      "drs": 1,
+      "positionData": {
+        "x": -30.99451405895481,
+        "y": -2450.000276737655,
+        "z": 90.00000000054078
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 13,
+        "number": 31,
+        "code": "OCO",
+        "fullName": "Esteban Ocon"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 14,
+      "carNumber": 87,
+      "position": 14,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3557.17995776,
+      "drs": 1,
+      "positionData": {
+        "x": -1167,
+        "y": -1159,
+        "z": 82
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 14,
+        "number": 38,
+        "code": "BEA",
+        "fullName": "Oliver Bearman"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 15,
+      "carNumber": 30,
+      "position": 15,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3472.0500096,
+      "drs": 1,
+      "positionData": {
+        "x": -1203,
+        "y": -1124,
+        "z": 87.99999999999999
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 15,
+        "number": 30,
+        "code": "LAW",
+        "fullName": "Liam Lawson"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 16,
+      "carNumber": 5,
+      "position": 16,
+      "lapNumber": 1,
+      "throttle": 29,
+      "gear": 2,
+      "rpm": 10638.00511616,
+      "drs": 1,
+      "positionData": {
+        "x": -286.1418531073721,
+        "y": -2200.858517717064,
+        "z": 90.99999956264747
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 16,
+        "number": 5,
+        "code": "BOR",
+        "fullName": "Gabriel Bortoleto"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 17,
+      "carNumber": 14,
+      "position": 17,
+      "lapNumber": 1,
+      "throttle": 23.59499904,
+      "gear": 2,
+      "rpm": 8688.43000576,
+      "drs": 1,
+      "positionData": {
+        "x": -447.2420100083048,
+        "y": -2044.808907937485,
+        "z": 89.99995384198766
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 17,
+        "number": 14,
+        "code": "ALO",
+        "fullName": "Fernando Alonso"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 18,
+      "carNumber": 55,
+      "position": 18,
+      "lapNumber": 1,
+      "throttle": 22,
+      "gear": 2,
+      "rpm": 8967.06004992,
+      "drs": 1,
+      "positionData": {
+        "x": -561.0888743368481,
+        "y": -1936.913023467158,
+        "z": 88.9999995626466
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 18,
+        "number": 55,
+        "code": "SAI",
+        "fullName": "Carlos Sainz"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 19,
+      "carNumber": 7,
+      "position": 19,
+      "lapNumber": 1,
+      "throttle": 24,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 11197.81511808,
+      "drs": 1,
+      "positionData": {
+        "x": -312.9908978502705,
+        "y": -2174.003477057277,
+        "z": 91.00000566629156
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 19,
+        "number": 7,
+        "code": "DOO",
+        "fullName": "Jack Doohan"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 20,
+      "carNumber": 6,
+      "position": 20,
+      "lapNumber": 1,
+      "throttle": 104,
+      "brake": 1,
+      "drs": 1,
+      "positionData": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 20,
+        "number": 6,
+        "code": "HAD",
+        "fullName": "Isack Hadjar"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    }
+  ]
+}
+[오후 2:35:14] 서버 메시지: {
+  "type": "TIMING_UPDATE",
+  "sessionId": 1,
+  "sessionTime": 1.037,
+  "currentLap": 1,
+  "sessionStatus": "completed",
+  "drivers": [
+    {
+      "driverSessionId": 1,
+      "carNumber": 4,
+      "position": 1,
+      "lapNumber": 1,
+      "throttle": 18,
+      "gear": 2,
+      "rpm": 9504.34495104,
+      "drs": 1,
+      "positionData": {
+        "x": -1046.23530717133,
+        "y": -1475.761342034877,
+        "z": 86.0003242012481
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 1,
+        "number": 4,
+        "code": "NOR",
+        "fullName": "Lando Norris"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 2,
+      "carNumber": 1,
+      "position": 2,
+      "lapNumber": 1,
+      "throttle": 16,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10114.3998848,
+      "drs": 1,
+      "positionData": {
+        "x": -941.0836310659512,
+        "y": -1575.858788809488,
+        "z": 86.00000009135128
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 2,
+        "number": 1,
+        "code": "VER",
+        "fullName": "Max Verstappen"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 3,
+      "carNumber": 63,
+      "position": 3,
+      "lapNumber": 1,
+      "throttle": 20,
+      "gear": 2,
+      "rpm": 8906.749952,
+      "drs": 1,
+      "positionData": {
+        "x": -903.1910051438549,
+        "y": -1611.808659289727,
+        "z": 86.94875250465027
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 3,
+        "number": 63,
+        "code": "RUS",
+        "fullName": "George Russell"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 4,
+      "carNumber": 12,
+      "position": 4,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 9068.2250432,
+      "drs": 1,
+      "positionData": {
+        "x": -207.2370539526009,
+        "y": -2276.814239605645,
+        "z": 91.00000000326125
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 4,
+        "number": 12,
+        "code": "ANT",
+        "fullName": "Kimi Antonelli"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 5,
+      "carNumber": 23,
+      "position": 5,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 8436.75999232,
+      "drs": 1,
+      "positionData": {
+        "x": -807.2310856105729,
+        "y": -1702.765563165368,
+        "z": 87.99995381125913
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 5,
+        "number": 23,
+        "code": "ALB",
+        "fullName": "Alexander Albon"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 6,
+      "carNumber": 18,
+      "position": 6,
+      "lapNumber": 1,
+      "throttle": 23.40500096,
+      "gear": 2,
+      "rpm": 8658.83993088,
+      "drs": 1,
+      "positionData": {
+        "x": -388.6644518383193,
+        "y": -2099.862145990399,
+        "z": 90.0000000913513
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 6,
+        "number": 18,
+        "code": "STR",
+        "fullName": "Lance Stroll"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 7,
+      "carNumber": 27,
+      "position": 7,
+      "lapNumber": 1,
+      "throttle": 25,
+      "gear": 2,
+      "rpm": 10643.2750528,
+      "drs": 1,
+      "positionData": {
+        "x": -171.2386227653123,
+        "y": -2312.761052847725,
+        "z": 90.00190929478748
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 7,
+        "number": 27,
+        "code": "HUL",
+        "fullName": "Nico Hulkenberg"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 8,
+      "carNumber": 16,
+      "position": 8,
+      "lapNumber": 1,
+      "throttle": 25,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 9531.63004416,
+      "drs": 1,
+      "positionData": {
+        "x": -721.0922151131832,
+        "y": -1783.960936290331,
+        "z": 88.00000009082598
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 8,
+        "number": 16,
+        "code": "LEC",
+        "fullName": "Charles Leclerc"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 9,
+      "carNumber": 81,
+      "position": 9,
+      "lapNumber": 1,
+      "throttle": 19,
+      "gear": 2,
+      "rpm": 9666.03504512,
+      "drs": 1,
+      "positionData": {
+        "x": -988.1034372298891,
+        "y": -1530.893251469648,
+        "z": 85.99999956264658
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 9,
+        "number": 81,
+        "code": "PIA",
+        "fullName": "Oscar Piastri"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 10,
+      "carNumber": 44,
+      "position": 10,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 9412.5751104,
+      "drs": 1,
+      "positionData": {
+        "x": -666.1417483254859,
+        "y": -1836.860201862558,
+        "z": 88.0000000035137
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 10,
+        "number": 44,
+        "code": "HAM",
+        "fullName": "Lewis Hamilton"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 11,
+      "carNumber": 10,
+      "position": 11,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 10975.67986176,
+      "drs": 1,
+      "positionData": {
+        "x": -622.2389416782236,
+        "y": -1878.757382363954,
+        "z": 88.9487525054167
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 11,
+        "number": 10,
+        "code": "GAS",
+        "fullName": "Pierre Gasly"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 12,
+      "carNumber": 22,
+      "position": 12,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10132.87990016,
+      "drs": 1,
+      "positionData": {
+        "x": -848.1910920686228,
+        "y": -1663.860202304496,
+        "z": 87.00000566706933
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 12,
+        "number": 22,
+        "code": "TSU",
+        "fullName": "Yuki Tsunoda"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    },
+    {
+      "driverSessionId": 13,
+      "carNumber": 31,
+      "position": 13,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 10714.39496064,
+      "drs": 1,
+      "positionData": {
+        "x": -30.99451405895481,
+        "y": -2450.000276737655,
+        "z": 90.00000000054078
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 13,
+        "number": 31,
+        "code": "OCO",
+        "fullName": "Esteban Ocon"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 14,
+      "carNumber": 87,
+      "position": 14,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3557.17995776,
+      "drs": 1,
+      "positionData": {
+        "x": -1167,
+        "y": -1159,
+        "z": 82
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 14,
+        "number": 38,
+        "code": "BEA",
+        "fullName": "Oliver Bearman"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 15,
+      "carNumber": 30,
+      "position": 15,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3472.0500096,
+      "drs": 1,
+      "positionData": {
+        "x": -1203,
+        "y": -1124,
+        "z": 87.99999999999999
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 15,
+        "number": 30,
+        "code": "LAW",
+        "fullName": "Liam Lawson"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 16,
+      "carNumber": 5,
+      "position": 16,
+      "lapNumber": 1,
+      "throttle": 29,
+      "gear": 2,
+      "rpm": 10638.00511616,
+      "drs": 1,
+      "positionData": {
+        "x": -286.1418531073721,
+        "y": -2200.858517717064,
+        "z": 90.99999956264747
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 16,
+        "number": 5,
+        "code": "BOR",
+        "fullName": "Gabriel Bortoleto"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 17,
+      "carNumber": 14,
+      "position": 17,
+      "lapNumber": 1,
+      "throttle": 23.59499904,
+      "gear": 2,
+      "rpm": 8688.43000576,
+      "drs": 1,
+      "positionData": {
+        "x": -447.2420100083048,
+        "y": -2044.808907937485,
+        "z": 89.99995384198766
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 17,
+        "number": 14,
+        "code": "ALO",
+        "fullName": "Fernando Alonso"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 18,
+      "carNumber": 55,
+      "position": 18,
+      "lapNumber": 1,
+      "throttle": 22,
+      "gear": 2,
+      "rpm": 8967.06004992,
+      "drs": 1,
+      "positionData": {
+        "x": -561.0888743368481,
+        "y": -1936.913023467158,
+        "z": 88.9999995626466
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 18,
+        "number": 55,
+        "code": "SAI",
+        "fullName": "Carlos Sainz"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 19,
+      "carNumber": 7,
+      "position": 19,
+      "lapNumber": 1,
+      "throttle": 24,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 11197.81511808,
+      "drs": 1,
+      "positionData": {
+        "x": -312.9908978502705,
+        "y": -2174.003477057277,
+        "z": 91.00000566629156
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 19,
+        "number": 7,
+        "code": "DOO",
+        "fullName": "Jack Doohan"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 20,
+      "carNumber": 6,
+      "position": 20,
+      "lapNumber": 1,
+      "throttle": 104,
+      "brake": 1,
+      "drs": 1,
+      "positionData": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 20,
+        "number": 6,
+        "code": "HAD",
+        "fullName": "Isack Hadjar"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    }
+  ]
+}
+[오후 2:35:14] 메시지 전송: replay-control -> {"type":"PAUSE","sessionId":1}
+[오후 2:35:15] 서버 메시지: {
+  "type": "TIMING_UPDATE",
+  "sessionId": 1,
+  "sessionTime": 1.547,
+  "currentLap": 1,
+  "sessionStatus": "completed",
+  "drivers": [
+    {
+      "driverSessionId": 1,
+      "carNumber": 4,
+      "position": 1,
+      "lapNumber": 1,
+      "throttle": 18,
+      "gear": 2,
+      "rpm": 9504.34495104,
+      "drs": 1,
+      "positionData": {
+        "x": -1046.23530717133,
+        "y": -1475.761342034877,
+        "z": 86.0003242012481
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 1,
+        "number": 4,
+        "code": "NOR",
+        "fullName": "Lando Norris"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 2,
+      "carNumber": 1,
+      "position": 2,
+      "lapNumber": 1,
+      "throttle": 16,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10114.3998848,
+      "drs": 1,
+      "positionData": {
+        "x": -941.0836310659512,
+        "y": -1575.858788809488,
+        "z": 86.00000009135128
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 2,
+        "number": 1,
+        "code": "VER",
+        "fullName": "Max Verstappen"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 3,
+      "carNumber": 63,
+      "position": 3,
+      "lapNumber": 1,
+      "throttle": 20,
+      "gear": 2,
+      "rpm": 8906.749952,
+      "drs": 1,
+      "positionData": {
+        "x": -903.1910051438549,
+        "y": -1611.808659289727,
+        "z": 86.94875250465027
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 3,
+        "number": 63,
+        "code": "RUS",
+        "fullName": "George Russell"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 4,
+      "carNumber": 12,
+      "position": 4,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 9068.2250432,
+      "drs": 1,
+      "positionData": {
+        "x": -207.2370539526009,
+        "y": -2276.814239605645,
+        "z": 91.00000000326125
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 4,
+        "number": 12,
+        "code": "ANT",
+        "fullName": "Kimi Antonelli"
+      },
+      "team": {
+        "id": 3,
+        "name": "Mercedes",
+        "shortName": "MER"
+      }
+    },
+    {
+      "driverSessionId": 5,
+      "carNumber": 23,
+      "position": 5,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 8436.75999232,
+      "drs": 1,
+      "positionData": {
+        "x": -807.2310856105729,
+        "y": -1702.765563165368,
+        "z": 87.99995381125913
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 5,
+        "number": 23,
+        "code": "ALB",
+        "fullName": "Alexander Albon"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 6,
+      "carNumber": 18,
+      "position": 6,
+      "lapNumber": 1,
+      "throttle": 23.40500096,
+      "gear": 2,
+      "rpm": 8658.83993088,
+      "drs": 1,
+      "positionData": {
+        "x": -388.6644518383193,
+        "y": -2099.862145990399,
+        "z": 90.0000000913513
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 6,
+        "number": 18,
+        "code": "STR",
+        "fullName": "Lance Stroll"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 7,
+      "carNumber": 27,
+      "position": 7,
+      "lapNumber": 1,
+      "throttle": 25,
+      "gear": 2,
+      "rpm": 10643.2750528,
+      "drs": 1,
+      "positionData": {
+        "x": -171.2386227653123,
+        "y": -2312.761052847725,
+        "z": 90.00190929478748
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 7,
+        "number": 27,
+        "code": "HUL",
+        "fullName": "Nico Hulkenberg"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 8,
+      "carNumber": 16,
+      "position": 8,
+      "lapNumber": 1,
+      "throttle": 25,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 9531.63004416,
+      "drs": 1,
+      "positionData": {
+        "x": -721.0922151131832,
+        "y": -1783.960936290331,
+        "z": 88.00000009082598
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 8,
+        "number": 16,
+        "code": "LEC",
+        "fullName": "Charles Leclerc"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 9,
+      "carNumber": 81,
+      "position": 9,
+      "lapNumber": 1,
+      "throttle": 19,
+      "gear": 2,
+      "rpm": 9666.03504512,
+      "drs": 1,
+      "positionData": {
+        "x": -988.1034372298891,
+        "y": -1530.893251469648,
+        "z": 85.99999956264658
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 9,
+        "number": 81,
+        "code": "PIA",
+        "fullName": "Oscar Piastri"
+      },
+      "team": {
+        "id": 1,
+        "name": "McLaren",
+        "shortName": "MCL"
+      }
+    },
+    {
+      "driverSessionId": 10,
+      "carNumber": 44,
+      "position": 10,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 9412.5751104,
+      "drs": 1,
+      "positionData": {
+        "x": -666.1417483254859,
+        "y": -1836.860201862558,
+        "z": 88.0000000035137
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 10,
+        "number": 44,
+        "code": "HAM",
+        "fullName": "Lewis Hamilton"
+      },
+      "team": {
+        "id": 7,
+        "name": "Ferrari",
+        "shortName": "FER"
+      }
+    },
+    {
+      "driverSessionId": 11,
+      "carNumber": 10,
+      "position": 11,
+      "lapNumber": 1,
+      "throttle": 23,
+      "gear": 2,
+      "rpm": 10975.67986176,
+      "drs": 1,
+      "positionData": {
+        "x": -622.2389416782236,
+        "y": -1878.757382363954,
+        "z": 88.9487525054167
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 11,
+        "number": 10,
+        "code": "GAS",
+        "fullName": "Pierre Gasly"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 12,
+      "carNumber": 22,
+      "position": 12,
+      "lapNumber": 1,
+      "throttle": 20,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 10132.87990016,
+      "drs": 1,
+      "positionData": {
+        "x": -848.1910920686228,
+        "y": -1663.860202304496,
+        "z": 87.00000566706933
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 12,
+        "number": 22,
+        "code": "TSU",
+        "fullName": "Yuki Tsunoda"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    },
+    {
+      "driverSessionId": 13,
+      "carNumber": 31,
+      "position": 13,
+      "lapNumber": 1,
+      "throttle": 21,
+      "gear": 2,
+      "rpm": 10714.39496064,
+      "drs": 1,
+      "positionData": {
+        "x": -30.99451405895481,
+        "y": -2450.000276737655,
+        "z": 90.00000000054078
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 13,
+        "number": 31,
+        "code": "OCO",
+        "fullName": "Esteban Ocon"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 14,
+      "carNumber": 87,
+      "position": 14,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3557.17995776,
+      "drs": 1,
+      "positionData": {
+        "x": -1167,
+        "y": -1159,
+        "z": 82
+      },
+      "status": "Finished",
+      "driver": {
+        "id": 14,
+        "number": 38,
+        "code": "BEA",
+        "fullName": "Oliver Bearman"
+      },
+      "team": {
+        "id": 10,
+        "name": "Haas F1 Team",
+        "shortName": "HAA"
+      }
+    },
+    {
+      "driverSessionId": 15,
+      "carNumber": 30,
+      "position": 15,
+      "lapNumber": 1,
+      "gear": 2,
+      "rpm": 3472.0500096,
+      "drs": 1,
+      "positionData": {
+        "x": -1203,
+        "y": -1124,
+        "z": 87.99999999999999
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 15,
+        "number": 30,
+        "code": "LAW",
+        "fullName": "Liam Lawson"
+      },
+      "team": {
+        "id": 2,
+        "name": "Red Bull Racing",
+        "shortName": "RED"
+      }
+    },
+    {
+      "driverSessionId": 16,
+      "carNumber": 5,
+      "position": 16,
+      "lapNumber": 1,
+      "throttle": 29,
+      "gear": 2,
+      "rpm": 10638.00511616,
+      "drs": 1,
+      "positionData": {
+        "x": -286.1418531073721,
+        "y": -2200.858517717064,
+        "z": 90.99999956264747
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 16,
+        "number": 5,
+        "code": "BOR",
+        "fullName": "Gabriel Bortoleto"
+      },
+      "team": {
+        "id": 6,
+        "name": "Kick Sauber",
+        "shortName": "KIC"
+      }
+    },
+    {
+      "driverSessionId": 17,
+      "carNumber": 14,
+      "position": 17,
+      "lapNumber": 1,
+      "throttle": 23.59499904,
+      "gear": 2,
+      "rpm": 8688.43000576,
+      "drs": 1,
+      "positionData": {
+        "x": -447.2420100083048,
+        "y": -2044.808907937485,
+        "z": 89.99995384198766
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 17,
+        "number": 14,
+        "code": "ALO",
+        "fullName": "Fernando Alonso"
+      },
+      "team": {
+        "id": 5,
+        "name": "Aston Martin",
+        "shortName": "AST"
+      }
+    },
+    {
+      "driverSessionId": 18,
+      "carNumber": 55,
+      "position": 18,
+      "lapNumber": 1,
+      "throttle": 22,
+      "gear": 2,
+      "rpm": 8967.06004992,
+      "drs": 1,
+      "positionData": {
+        "x": -561.0888743368481,
+        "y": -1936.913023467158,
+        "z": 88.9999995626466
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 18,
+        "number": 55,
+        "code": "SAI",
+        "fullName": "Carlos Sainz"
+      },
+      "team": {
+        "id": 4,
+        "name": "Williams",
+        "shortName": "WIL"
+      }
+    },
+    {
+      "driverSessionId": 19,
+      "carNumber": 7,
+      "position": 19,
+      "lapNumber": 1,
+      "throttle": 24,
+      "brake": 1,
+      "gear": 2,
+      "rpm": 11197.81511808,
+      "drs": 1,
+      "positionData": {
+        "x": -312.9908978502705,
+        "y": -2174.003477057277,
+        "z": 91.00000566629156
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 19,
+        "number": 7,
+        "code": "DOO",
+        "fullName": "Jack Doohan"
+      },
+      "team": {
+        "id": 8,
+        "name": "Alpine",
+        "shortName": "ALP"
+      }
+    },
+    {
+      "driverSessionId": 20,
+      "carNumber": 6,
+      "position": 20,
+      "lapNumber": 1,
+      "throttle": 104,
+      "brake": 1,
+      "drs": 1,
+      "positionData": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "Retired",
+      "driver": {
+        "id": 20,
+        "number": 6,
+        "code": "HAD",
+        "fullName": "Isack Hadjar"
+      },
+      "team": {
+        "id": 9,
+        "name": "Racing Bulls",
+        "shortName": "RAC"
+      }
+    }
+  ]
+}

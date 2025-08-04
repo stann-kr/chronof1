@@ -624,7 +624,7 @@ class LiveRepository:
                   pit_in: Optional[bool] = None, pit_out: Optional[bool] = None,
                   position: Optional[int] = None,
                   # 새로운 FastF1 필드들
-                  lap_start_time: Optional[datetime] = None, lap_start_date: Optional[datetime] = None,
+                  sessionTime: Optional[float] = None, lap_start_time: Optional[datetime] = None, lap_start_date: Optional[datetime] = None,
                   sector1_session_time: Optional[float] = None, sector2_session_time: Optional[float] = None,
                   sector3_session_time: Optional[float] = None, pit_in_time: Optional[datetime] = None,
                   pit_out_time: Optional[datetime] = None, speed_i1: Optional[float] = None,
@@ -695,6 +695,7 @@ class LiveRepository:
                     pit_in = COALESCE(%s, pit_in),
                     pit_out = COALESCE(%s, pit_out),
                     position = COALESCE(%s, position),
+                    session_time = COALESCE(%s, session_time),
                     lap_start_time = COALESCE(%s, lap_start_time),
                     lap_start_date = COALESCE(%s, lap_start_date),
                     sector1_session_time = COALESCE(%s, sector1_session_time),
@@ -732,17 +733,17 @@ class LiveRepository:
                 (driver_session_id, lap_number, lap_time, lap_time_string, 
                  sector1_time, sector2_time, sector3_time, is_personal_best, 
                  is_valid, tyre_compound, pit_in, pit_out, position,
-                 lap_start_time, lap_start_date, sector1_session_time, sector2_session_time,
+                 session_time, lap_start_time, lap_start_date, sector1_session_time, sector2_session_time,
                  sector3_session_time, pit_in_time, pit_out_time, speed_i1, speed_i2,
                  speed_fl, speed_st, tyre_life, fresh_tyre, is_accurate, track_status,
                  deleted, deleted_reason, fast_f1_generated) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING id
                 ''',
                 driver_session_id, lap_number, lap_time, lap_time_string,
                 sector1_time, sector2_time, sector3_time, is_personal_best,
                 is_valid, tyre_compound, pit_in, pit_out, position,
-                lap_start_time, lap_start_date, sector1_session_time, sector2_session_time,
+                sessionTime, lap_start_time, lap_start_date, sector1_session_time, sector2_session_time,
                 sector3_session_time, pit_in_time, pit_out_time, speed_i1, speed_i2,
                 speed_fl, speed_st, tyre_life, fresh_tyre, is_accurate, track_status,
                 deleted, deleted_reason, fast_f1_generated
@@ -898,25 +899,20 @@ class LiveRepository:
         if status_df.empty:
             return 0
         
-        # 세션 시작 시간이 없으면 첫 번째 타임스탬프를 기준으로 설정
         if session_start_time is None:
             session_start_time = datetime.now().replace(microsecond=0)
             
-        # 데이터 행 준비
         rows = []
         for _, row in status_df.iterrows():
             timestamp = row.get("Time")
             if pd.notna(timestamp):
-                # Timedelta를 실제 경기 시간으로 변환
-                if hasattr(timestamp, 'total_seconds'):
-                    # 세션 시작 시간에서 상대 시간을 더해 실제 경기 시간 계산
-                    race_time = session_start_time + timedelta(seconds=timestamp.total_seconds())
-                else:
-                    race_time = session_start_time
+                race_time = session_start_time + timedelta(seconds=timestamp.total_seconds())
+                session_time = timestamp.total_seconds()
                 
                 rows.append((
                     session_id,
                     race_time,
+                    session_time,
                     str(row.get("Status", "")),
                     int(row.get("TimeRemaining")) if pd.notna(row.get("TimeRemaining")) else None
                 ))
@@ -926,8 +922,8 @@ class LiveRepository:
             
         sql = '''
         INSERT INTO "live_session_status" 
-        (session_id, timestamp, status, time_remaining) 
-        VALUES (%s, %s, %s, %s)
+        (session_id, timestamp, session_time, status, time_remaining) 
+        VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT (session_id, timestamp) DO NOTHING
         '''
         
@@ -950,25 +946,20 @@ class LiveRepository:
         if status_df.empty:
             return 0
         
-        # 세션 시작 시간이 없으면 첫 번째 타임스탬프를 기준으로 설정
         if session_start_time is None:
             session_start_time = datetime.now().replace(microsecond=0)
             
-        # 데이터 행 준비
         rows = []
         for _, row in status_df.iterrows():
             timestamp = row.get("Time")
             if pd.notna(timestamp):
-                # Timedelta를 실제 경기 시간으로 변환
-                if hasattr(timestamp, 'total_seconds'):
-                    # 세션 시작 시간에서 상대 시간을 더해 실제 경기 시간 계산
-                    race_time = session_start_time + timedelta(seconds=timestamp.total_seconds())
-                else:
-                    race_time = session_start_time
+                race_time = session_start_time + timedelta(seconds=timestamp.total_seconds())
+                session_time = timestamp.total_seconds()
                 
                 rows.append((
                     session_id,
                     race_time,
+                    session_time,
                     str(row.get("Status", "")),
                     str(row.get("Message", "")) if pd.notna(row.get("Message")) else None
                 ))
@@ -978,8 +969,8 @@ class LiveRepository:
             
         sql = '''
         INSERT INTO "live_track_status" 
-        (session_id, timestamp, status, message) 
-        VALUES (%s, %s, %s, %s)
+        (session_id, timestamp, session_time, status, message) 
+        VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT (session_id, timestamp) DO NOTHING
         '''
         
@@ -988,12 +979,13 @@ class LiveRepository:
         
         return len(rows)
     
-    def insert_pit_stop_data(self, driver_session_id: int, pit_stops_df: pd.DataFrame) -> int:
+    def insert_pit_stop_data(self, driver_session_id: int, pit_stops_df: pd.DataFrame, session_start_time: datetime = None) -> int:
         """피트스톱 데이터를 일괄 삽입합니다.
         
         Args:
             driver_session_id: 드라이버 세션 ID
             pit_stops_df: 피트스톱 데이터프레임
+            session_start_time: 세션 시작 시간
             
         Returns:
             삽입된 행 수
@@ -1001,33 +993,27 @@ class LiveRepository:
         if pit_stops_df.empty:
             return 0
             
-        # 데이터 행 준비
         rows = []
         for _, row in pit_stops_df.iterrows():
             lap_number = row.get("LapNumber")
             if pd.notna(lap_number):
-                # 피트스톱 시간 처리
-                pit_time = None
-                pit_time_str = None
-                if pd.notna(row.get("PitTime")):
-                    pit_time_value = row.get("PitTime")
-                    if hasattr(pit_time_value, 'total_seconds'):
-                        pit_time = pit_time_value.total_seconds()
-                        pit_time_str = str(pit_time_value)
-                
-                # 총 소요 시간 계산 (피트인/아웃 시간 차이)
-                total_duration = None
+                pit_time_val = row.get("PitTime")
+                stop_time = pit_time_val.total_seconds() if pd.notna(pit_time_val) else None
+                stop_time_string = str(pit_time_val) if pd.notna(pit_time_val) else None
+
                 pit_in_time = row.get("PitInTime")
-                pit_out_time = row.get("PitOutTime")
-                if pd.notna(pit_in_time) and pd.notna(pit_out_time):
-                    if hasattr(pit_in_time, 'total_seconds') and hasattr(pit_out_time, 'total_seconds'):
-                        total_duration = pit_out_time.total_seconds() - pit_in_time.total_seconds()
+                timestamp = session_start_time + timedelta(seconds=pit_in_time.total_seconds()) if pd.notna(pit_in_time) and session_start_time else None
+                session_time = pit_in_time.total_seconds() if pd.notna(pit_in_time) else None
+
+                total_duration = (row.get("PitOutTime") - pit_in_time).total_seconds() if pd.notna(row.get("PitOutTime")) and pd.notna(pit_in_time) else None
                 
                 rows.append((
                     driver_session_id,
                     int(lap_number),
-                    pit_time,
-                    pit_time_str,
+                    timestamp,
+                    session_time,
+                    stop_time,
+                    stop_time_string,
                     total_duration
                 ))
         
@@ -1036,9 +1022,11 @@ class LiveRepository:
             
         sql = '''
         INSERT INTO "live_pit_stops" 
-        (driver_session_id, lap_number, stop_time, stop_time_string, total_duration) 
-        VALUES (%s, %s, %s, %s, %s)
+        (driver_session_id, lap_number, timestamp, session_time, stop_time, stop_time_string, total_duration) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (driver_session_id, lap_number) DO UPDATE SET
+            timestamp = EXCLUDED.timestamp,
+            session_time = EXCLUDED.session_time,
             stop_time = EXCLUDED.stop_time,
             stop_time_string = EXCLUDED.stop_time_string,
             total_duration = EXCLUDED.total_duration
@@ -1109,25 +1097,20 @@ class LiveRepository:
         if weather_df.empty:
             return 0
         
-        # 세션 시작 시간이 없으면 첫 번째 타임스탬프를 기준으로 설정
         if session_start_time is None:
             session_start_time = datetime.now().replace(microsecond=0)
             
-        # 데이터 행 준비
         rows = []
         for _, row in weather_df.iterrows():
             timestamp = row.get("Time")
             if pd.notna(timestamp):
-                # Timedelta를 실제 경기 시간으로 변환
-                if hasattr(timestamp, 'total_seconds'):
-                    # 세션 시작 시간에서 상대 시간을 더해 실제 경기 시간 계산
-                    race_time = session_start_time + timedelta(seconds=timestamp.total_seconds())
-                else:
-                    race_time = session_start_time
+                race_time = session_start_time + timedelta(seconds=timestamp.total_seconds())
+                session_time = timestamp.total_seconds()
                 
                 rows.append((
                     session_id,
                     race_time,
+                    session_time,
                     float(row.get("AirTemp")) if pd.notna(row.get("AirTemp")) else None,
                     float(row.get("TrackTemp")) if pd.notna(row.get("TrackTemp")) else None,
                     float(row.get("Humidity")) if pd.notna(row.get("Humidity")) else None,
@@ -1142,9 +1125,9 @@ class LiveRepository:
             
         sql = '''
         INSERT INTO "live_weather_data" 
-        (session_id, timestamp, air_temp, track_temp, humidity, pressure, 
+        (session_id, timestamp, session_time, air_temp, track_temp, humidity, pressure, 
          wind_speed, wind_direction, is_raining) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
         
         self.db.execute_many(sql, rows)
@@ -1172,6 +1155,7 @@ class LiveRepository:
         
         # 데이터프레임 전처리
         timestamp_col = telemetry_df["Date"]
+        session_time_col = telemetry_df.get("SessionTime", pd.Series([None] * len(telemetry_df)))
         
         # 위치 데이터 추출
         x = telemetry_df.get("X", pd.Series([None] * len(telemetry_df)))
@@ -1201,10 +1185,17 @@ class LiveRepository:
                 race_time = session_start_time + timedelta(seconds=timestamp_val.total_seconds())
             else:
                 race_time = timestamp_val
+
+            session_time_val = session_time_col.iloc[i]
+            if hasattr(session_time_val, 'total_seconds'):
+                session_time = session_time_val.total_seconds()
+            else:
+                session_time = safe_float(session_time_val)
             
             rows.append((
                 driver_session_id,
                 race_time,
+                session_time,
                 x_val,
                 y_val,
                 safe_float(z.iloc[i]),
@@ -1217,8 +1208,8 @@ class LiveRepository:
         # 데이터 일괄 삽입
         sql = '''
         INSERT INTO "live_position_data" 
-        (driver_session_id, timestamp, x, y, z, status) 
-        VALUES (%s, %s, %s, %s, %s, %s)
+        (driver_session_id, timestamp, session_time, x, y, z, status) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         '''
         
         self.db.execute_many(sql, rows)
@@ -1243,30 +1234,31 @@ class LiveRepository:
         
         rows = []
         for _, row in messages_df.iterrows():
-            # 시간 데이터 변환 (경기 시간으로)
             timestamp = None
+            session_time = None
             if 'Time' in row and pd.notna(row['Time']):
-                if hasattr(row['Time'], 'to_pydatetime'):
-                    timestamp = row['Time'].to_pydatetime()
-                elif hasattr(row['Time'], 'total_seconds') and session_start_time:
-                    timestamp = session_start_time + timedelta(seconds=row['Time'].total_seconds())
-                else:
-                    timestamp = row['Time']
+                time_val = row['Time']
+                if hasattr(time_val, 'total_seconds'):
+                    session_time = time_val.total_seconds()
+                    if session_start_time:
+                        timestamp = session_start_time + timedelta(seconds=session_time)
             
-            # 메시지 분류 및 내용
+            if not timestamp:
+                continue
+
             category = str(row.get('Category', '')) if pd.notna(row.get('Category')) else None
             message = str(row.get('Message', '')) if pd.notna(row.get('Message')) else None
             status = str(row.get('Status', '')) if pd.notna(row.get('Status')) else None
             flag_type = str(row.get('Flag', '')) if pd.notna(row.get('Flag')) else None
             scope = str(row.get('Scope', '')) if pd.notna(row.get('Scope')) else None
             
-            # 메시지가 없는 경우 건너뛰기
             if not message:
                 continue
             
             rows.append((
                 session_id,
                 timestamp,
+                session_time,
                 category,
                 message,
                 status,
@@ -1279,8 +1271,8 @@ class LiveRepository:
             
         sql = '''
         INSERT INTO "live_session_messages" 
-        (session_id, timestamp, category, message, status, flag_type, scope) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        (session_id, timestamp, session_time, category, message, status, flag_type, scope) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
         
         self.db.execute_many(sql, rows)
