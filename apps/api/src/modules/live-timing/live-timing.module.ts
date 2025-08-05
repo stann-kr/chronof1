@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { LiveTimingController } from './controllers/live-timing.controller';
 import { LiveTimingService } from './services/live-timing.service';
 import { LiveTimingGateway } from './websocket/gateways/live-timing.gateway';
-import { ReplayService } from './services/replay.service';
+import { ReplayService } from './websocket/services/replay.service'; // 올바른 완전 버전으로 복원
 import { PrismaModule } from '../../prisma/prisma.module';
 
 /**
