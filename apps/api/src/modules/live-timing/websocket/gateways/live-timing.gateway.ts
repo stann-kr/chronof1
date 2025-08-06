@@ -395,6 +395,113 @@ export class LiveTimingGateway
     }
   }
 
+  /**
+   * 📦 청크 데이터 브로드캐스트 (새로운 F1 라이브 타이밍 아키텍처)
+   * 
+   * 🚀 **백엔드 → 프론트엔드 청크 전송:**
+   * 1. 1-2분 단위 데이터 청크를 한 번에 전송
+   * 2. 프론트엔드에서 캐시 후 100ms 간격 UI 업데이트
+   * 3. WebSocket 부하 최소화 + 부드러운 사용자 경험
+   */
+  broadcastChunkData(sessionId: number, chunkData: {
+    type: string;
+    sessionId: number;
+    chunkIndex: number;
+    startTime: number;
+    endTime: number;
+    timingData: Record<number, unknown[]>;
+    totalChunks: number;
+  }): void {
+    // 서버가 초기화되지 않았으면 브로드캐스트 스킵
+    if (!this.server || !this.server.sockets) {
+      this.logger.warn(`WebSocket 서버가 초기화되지 않음. 청크 데이터 전송 스킵 (세션 ${sessionId})`);
+      return;
+    }
+
+    // 세션을 구독하는 모든 클라이언트에게 청크 데이터 전송
+    const sessionClients = Array.from(this.connectedClients.entries())
+      .filter(([, clientInfo]) => clientInfo.sessionId === sessionId);
+    
+    if (sessionClients.length === 0) {
+      this.logger.debug(`세션 ${sessionId}의 구독 클라이언트가 없어서 청크 데이터 전송 스킵`);
+      return;
+    }
+    
+    try {
+      let successCount = 0;
+      let failCount = 0;
+      
+      for (const [clientId, clientInfo] of sessionClients) {
+        try {
+          // 청크 데이터 전송
+          clientInfo.socket.emit('chunk-data', chunkData);
+          successCount++;
+        } catch (clientError) {
+          failCount++;
+          this.logger.warn(`❌ 클라이언트 ${clientId} 청크 데이터 전송 실패:`, clientError instanceof Error ? clientError.message : String(clientError));
+        }
+      }
+      
+      this.logger.debug(`[세션 ${sessionId}] 청크 ${chunkData.chunkIndex} 전송 완료:
+      - 대상 클라이언트: ${sessionClients.length}명
+      - 전송 성공: ${successCount}명, 실패: ${failCount}명
+      - 청크 범위: ${chunkData.startTime}s ~ ${chunkData.endTime}s`);
+      
+    } catch (error) {
+      this.logger.error(`❌ 청크 데이터 브로드캐스트 실패 (세션 ${sessionId}):`, error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
+   * 📍 재생 위치 브로드캐스트 (현재 재생 시간만)
+   */
+  broadcastPlaybackPosition(sessionId: number, positionData: {
+    type: string;
+    sessionId: number;
+    currentTime: number;
+    sessionTimeFormatted: string;
+    sessionStatus: string;
+    speed: number;
+  }): void {
+    // 서버가 초기화되지 않았으면 브로드캐스트 스킵
+    if (!this.server || !this.server.sockets) {
+      this.logger.warn(`WebSocket 서버가 초기화되지 않음. 재생 위치 전송 스킵 (세션 ${sessionId})`);
+      return;
+    }
+
+    // 세션을 구독하는 모든 클라이언트에게 재생 위치 전송
+    const sessionClients = Array.from(this.connectedClients.entries())
+      .filter(([, clientInfo]) => clientInfo.sessionId === sessionId);
+    
+    if (sessionClients.length === 0) {
+      return; // 로그 없이 조용히 스킵
+    }
+    
+    try {
+      let successCount = 0;
+      let failCount = 0;
+      
+      for (const [clientId, clientInfo] of sessionClients) {
+        try {
+          // 재생 위치 전송
+          clientInfo.socket.emit('playback-position', positionData);
+          successCount++;
+        } catch (clientError) {
+          failCount++;
+          this.logger.warn(`❌ 클라이언트 ${clientId} 재생 위치 전송 실패:`, clientError instanceof Error ? clientError.message : String(clientError));
+        }
+      }
+      
+      // 디버그 로그는 10초마다만
+      if (Math.floor(positionData.currentTime) % 10 === 0 && Math.floor(positionData.currentTime * 10) % 100 === 0) {
+        this.logger.debug(`[세션 ${sessionId}] 재생 위치 전송: ${positionData.currentTime.toFixed(1)}초 (성공: ${successCount}, 실패: ${failCount})`);
+      }
+      
+    } catch (error) {
+      this.logger.error(`❌ 재생 위치 브로드캐스트 실패 (세션 ${sessionId}):`, error instanceof Error ? error.message : String(error));
+    }
+  }
+
   private handleError(client: Socket, message: string): void {
     this.logger.error(message);
     const errorMessage: ErrorMessage = {

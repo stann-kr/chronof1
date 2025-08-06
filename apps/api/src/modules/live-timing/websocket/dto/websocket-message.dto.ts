@@ -54,6 +54,15 @@ export interface DriverTimingData {
   /** 3구간 타임 (밀리초) */
   sector3Time?: number;
   
+  /** 1구간 베스트 타임 (밀리초) - 세션 내 최고 기록 */
+  sector1Best?: number;
+  
+  /** 2구간 베스트 타임 (밀리초) - 세션 내 최고 기록 */
+  sector2Best?: number;
+  
+  /** 3구간 베스트 타임 (밀리초) - 세션 내 최고 기록 */
+  sector3Best?: number;
+  
   /** 속도 (km/h) */
   speed?: number;
   
@@ -122,6 +131,9 @@ export interface TimingUpdateMessage {
   /** 타임스탬프 (세션 시작 후 경과 초) */
   sessionTime: number;
   
+  /** 포맷된 세션 시간 (mm:ss.sss 형식) */
+  sessionTimeFormatted?: string;
+  
   /** 현재 랩 번호 */
   currentLap?: number;
   
@@ -133,6 +145,9 @@ export interface TimingUpdateMessage {
   
   /** 드라이버별 타이밍 데이터 */
   drivers: DriverTimingData[];
+  
+  /** Redis 캐시에서 데이터를 가져왔는지 여부 (성능 테스트용) */
+  fromCache?: boolean;
 }
 
 /**
