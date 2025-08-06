@@ -1,0 +1,11 @@
+{
+  "extends": ["@repo/eslint-config/base"],
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "rules": {
+    "no-console": "off",
+    "@typescript-eslint/no-var-requires": "off"
+  }
+}

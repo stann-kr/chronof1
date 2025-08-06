@@ -40,3 +40,162 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ChronoF1 커스텀 스타일 */
+.description {
+  font-size: 1.2em;
+  color: #666;
+  margin: 1rem 0 2rem 0;
+  font-style: italic;
+}
+
+.api-docs-section {
+  background: linear-gradient(135deg, #FF8700, #E06100);
+  color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: 0 4px 12px rgba(255, 135, 0, 0.3);
+}
+
+.api-docs-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5em;
+}
+
+.docs-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+
+.api-docs-link {
+  display: inline-block;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1em;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  min-width: 140px;
+  text-align: center;
+}
+
+.api-docs-link.primary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1.1em;
+}
+
+.api-docs-link.secondary {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-size: 0.95em;
+}
+
+.api-docs-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.api-info {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.api-info p {
+  margin: 0.5rem 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.api-info strong {
+  color: #FFE0CC;
+}
+
+/* Mock API 섹션 스타일 */
+.mock-api-section {
+  background: linear-gradient(135deg, #2D3748, #1A202C);
+  color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: 0 4px 12px rgba(45, 55, 72, 0.3);
+  border: 1px solid #4A5568;
+}
+
+.mock-api-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5em;
+  color: #68D391;
+}
+
+.mock-info {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.mock-server-status {
+  background: rgba(104, 211, 145, 0.1);
+  border: 1px solid #68D391;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.mock-server-status p {
+  margin: 0.5rem 0;
+  font-family: 'Courier New', monospace;
+  color: #68D391;
+}
+
+.mock-commands {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #68D391;
+}
+
+.mock-commands h3 {
+  margin: 0 0 1rem 0;
+  color: #68D391;
+  font-size: 1.1rem;
+}
+
+.mock-commands pre {
+  background-color: #0D1117;
+  color: #58A6FF;
+  padding: 0.75rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  border: 1px solid #30363D;
+}
+
+.mock-commands code {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  font-size: 0.9em;
+}
+
+.mock-warning {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(217, 119, 6, 0.1));
+  color: #FBB040;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #F59E0B;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.mock-warning::before {
+  content: "⚠️ ";
+  font-size: 1.2em;
+}

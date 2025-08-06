@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "mock-api": "cd src/mock-server && npm run dev"
   },
   "dependencies": {
     "react": "^19.1.0",
