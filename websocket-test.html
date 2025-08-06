@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoF1 Mock WebSocket 테스트</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ff8700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        button {
+            background: #238636;
+            border: 1px solid #2ea043;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        button:hover {
+            background: #2ea043;
+        }
+        button:disabled {
+            background: #656d76;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        .connected { background: rgba(35, 134, 54, 0.2); }
+        .disconnected { background: rgba(248, 81, 73, 0.2); }
+        .logs {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        .timestamp {
+            color: #7d8590;
+        }
+        .chunk-data { color: #58a6ff; }
+        .playback-position { color: #39d353; }
+        .error { color: #f85149; }
+        .info { color: #79c0ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏎️ ChronoF1 Mock WebSocket 테스트</h1>
+        
+        <div class="section">
+            <h2>연결 제어</h2>
+            <button id="connectBtn">연결</button>
+            <button id="disconnectBtn" disabled>연결 해제</button>
+            <button id="clearLogsBtn">로그 지우기</button>
+            
+            <div id="status" class="status disconnected">
+                연결 안됨 - ws://localhost:3001
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>세션 제어</h2>
+            <button id="joinSessionBtn" disabled>세션 참가 (ID: 1)</button>
+            
+            <div>
+                <label for="sessionInput">세션 ID: </label>
+                <input type="number" id="sessionInput" value="1" style="background: #0d1117; border: 1px solid #30363d; color: white; padding: 0.5rem; border-radius: 4px;">
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>실시간 로그</h2>
+            <div id="logs" class="logs">WebSocket 연결을 시작하세요...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+        let isConnected = false;
+
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const joinSessionBtn = document.getElementById('joinSessionBtn');
+        const clearLogsBtn = document.getElementById('clearLogsBtn');
+        const status = document.getElementById('status');
+        const logs = document.getElementById('logs');
+        const sessionInput = document.getElementById('sessionInput');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function updateUI() {
+            connectBtn.disabled = isConnected;
+            disconnectBtn.disabled = !isConnected;
+            joinSessionBtn.disabled = !isConnected;
+            
+            if (isConnected) {
+                status.textContent = '연결됨 - ws://localhost:3001';
+                status.className = 'status connected';
+            } else {
+                status.textContent = '연결 안됨 - ws://localhost:3001';
+                status.className = 'status disconnected';
+            }
+        }
+
+        connectBtn.addEventListener('click', () => {
+            log('WebSocket 연결을 시도합니다...', 'info');
+            
+            socket = io('http://localhost:3001');
+            
+            socket.on('connect', () => {
+                isConnected = true;
+                log('✅ WebSocket 연결 성공', 'info');
+                updateUI();
+            });
+            
+            socket.on('disconnect', () => {
+                isConnected = false;
+                log('❌ WebSocket 연결 해제됨', 'error');
+                updateUI();
+            });
+            
+            socket.on('connect_error', (error) => {
+                log(`❌ 연결 오류: ${error.message}`, 'error');
+                isConnected = false;
+                updateUI();
+            });
+            
+            socket.on('message', (data) => {
+                log(`💬 메시지: ${JSON.stringify(data)}`, 'info');
+            });
+            
+            socket.on('chunk-data', (data) => {
+                const driversCount = data.data?.drivers?.length || 0;
+                log(`📊 청크 데이터 수신 - 청크 ${data.chunkIndex}, 드라이버 ${driversCount}명`, 'chunk-data');
+            });
+            
+            socket.on('playback-position', (data) => {
+                log(`⏯️ 재생 위치 - 시간: ${data.currentTime.toFixed(1)}s, 속도: ${data.speed}x`, 'playback-position');
+            });
+        });
+
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        });
+
+        joinSessionBtn.addEventListener('click', () => {
+            const sessionId = parseInt(sessionInput.value) || 1;
+            log(`🏁 세션 ${sessionId}에 참가 요청`, 'info');
+            socket.emit('join-session', { sessionId: sessionId });
+        });
+
+        clearLogsBtn.addEventListener('click', () => {
+            logs.innerHTML = '';
+            log('로그가 지워졌습니다.', 'info');
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
