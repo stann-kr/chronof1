@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 ChronoF1 Redis 캐싱 테스트</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        .logs {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-cache-hit {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .log-cache-miss {
+            color: #ffc107;
+        }
+        .log-error {
+            color: #dc3545;
+        }
+        .log-info {
+            color: #17a2b8;
+        }
+        .performance-stats {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 ChronoF1 Redis 캐싱 성능 테스트</h1>
+            <p>실시간 F1 타이밍 데이터 성능 최적화 테스트</p>
+        </div>
+
+        <div class="status">
+            <div><strong>연결 상태:</strong> <span id="connectionStatus">연결 중...</span></div>
+            <div><strong>현재 세션:</strong> <span id="currentSession">-</span></div>
+            <div><strong>재생 상태:</strong> <span id="playbackStatus">정지</span></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="connectToSession(1)">레이스 재생 시작</button>
+            <button onclick="startReplay()">재생</button>
+            <button onclick="pauseReplay()">일시정지</button>
+            <button onclick="stopReplay()">정지</button>
+            <button onclick="testCachePerformance()">캐시 성능 테스트</button>
+            <button onclick="clearLogs()">로그 지우기</button>
+        </div>
+
+        <div class="performance-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="cacheHits">0</div>
+                <div class="stat-label">캐시 히트</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="cacheMisses">0</div>
+                <div class="stat-label">캐시 미스</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="avgResponseTime">-</div>
+                <div class="stat-label">평균 응답시간 (ms)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="performanceGain">-</div>
+                <div class="stat-label">성능 향상</div>
+            </div>
+        </div>
+
+        <div class="logs" id="logs">
+            <div class="log-entry log-info">🚀 ChronoF1 Redis 캐싱 테스트 준비 완료</div>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let currentSessionId = null;
+        let cacheHits = 0;
+        let cacheMisses = 0;
+        let responseTimes = [];
+
+        // Socket.IO 연결
+        function connectSocket() {
+            socket = io('http://localhost:3000/live-timing');
+            
+            socket.on('connect', () => {
+                updateStatus('connectionStatus', '✅ 연결됨');
+                addLog('🔌 WebSocket 연결 성공', 'info');
+            });
+
+            socket.on('disconnect', () => {
+                updateStatus('connectionStatus', '❌ 연결 끊김');
+                addLog('💔 WebSocket 연결 끊김', 'error');
+            });
+
+            socket.on('message', (data) => {
+                handleMessage(data);
+            });
+
+            socket.on('error', (error) => {
+                addLog(`❌ 오류: ${error.message}`, 'error');
+            });
+        }
+
+        // 메시지 처리
+        function handleMessage(data) {
+            const timestamp = new Date().toLocaleTimeString();
+            
+            switch(data.type) {
+                case 'SESSION_INFO':
+                    updateStatus('currentSession', `세션 ${data.sessionId} (${data.duration}초)`);
+                    addLog(`📊 세션 정보: ${JSON.stringify(data)}`, 'info');
+                    break;
+                    
+                case 'TIMING_UPDATE':
+                    // 성능 측정
+                    const responseTime = Date.now() - (data.requestTime || Date.now());
+                    responseTimes.push(responseTime);
+                    
+                    // 서버에서 제공하는 정확한 캐시 정보 사용
+                    if (data.fromCache === true) {
+                        cacheHits++;
+                        addLog(`✅ 캐시 HIT: Redis에서 초고속 응답! (${responseTime}ms)`, 'cache-hit');
+                    } else if (data.fromCache === false) {
+                        cacheMisses++;
+                        addLog(`❌ 캐시 MISS: PostgreSQL DB 쿼리 실행 (${responseTime}ms)`, 'cache-miss');
+                    } else {
+                        // fromCache 정보가 없는 경우 응답 시간으로 추정 (호환성)
+                        if (responseTime < 10) {
+                            cacheHits++;
+                            addLog(`✅ 캐시 HIT (추정): ${responseTime}ms - 초고속 응답!`, 'cache-hit');
+                        } else {
+                            cacheMisses++;
+                            addLog(`❌ 캐시 MISS (추정): ${responseTime}ms - DB 쿼리`, 'cache-miss');
+                        }
+                    }
+                    
+                    updatePerformanceStats();
+                    
+                    if (data.drivers && data.drivers.length > 0) {
+                        addLog(`🏎️ 타이밍 데이터: ${data.drivers.length}명 드라이버 (${responseTime}ms)`, 'info');
+                    }
+                    break;
+                    
+                case 'CONNECTION_STATUS':
+                    updateStatus('playbackStatus', data.status);
+                    addLog(`🎮 재생 상태: ${data.status}`, 'info');
+                    break;
+            }
+        }
+
+        // 세션 연결
+        function connectToSession(sessionId) {
+            if (!socket) {
+                addLog('❌ Socket 연결이 필요합니다', 'error');
+                return;
+            }
+            
+            currentSessionId = sessionId;
+            socket.emit('join-session', { sessionId });
+            addLog(`🎯 세션 ${sessionId}에 연결 요청`, 'info');
+        }
+
+        // 재생 제어
+        function startReplay() {
+            if (!currentSessionId) {
+                addLog('❌ 먼저 세션에 연결하세요', 'error');
+                return;
+            }
+            
+            socket.emit('replay-control', {
+                type: 'START',
+                sessionId: currentSessionId,
+                speed: 1
+            });
+            
+            addLog('▶️ 재생 시작', 'info');
+        }
+
+        function pauseReplay() {
+            if (!currentSessionId) return;
+            
+            socket.emit('replay-control', {
+                type: 'PAUSE',
+                sessionId: currentSessionId
+            });
+            
+            addLog('⏸️ 재생 일시정지', 'info');
+        }
+
+        function stopReplay() {
+            if (!currentSessionId) return;
+            
+            socket.emit('replay-control', {
+                type: 'STOP',
+                sessionId: currentSessionId
+            });
+            
+            addLog('⏹️ 재생 정지', 'info');
+        }
+
+        // 캐시 성능 테스트
+        function testCachePerformance() {
+            if (!currentSessionId) {
+                addLog('❌ 먼저 세션에 연결하세요', 'error');
+                return;
+            }
+
+            addLog('🧪 캐시 성능 테스트 시작 - 동일한 타이밍 10번 요청', 'info');
+            
+            // 동일한 시점을 10번 빠르게 요청하여 캐시 효과 테스트
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    socket.emit('replay-control', {
+                        type: 'SEEK',
+                        sessionId: currentSessionId,
+                        timestamp: 100 // 100초 지점으로 탐색
+                    });
+                }, i * 100); // 100ms 간격으로 요청
+            }
+        }
+
+        // 성능 통계 업데이트
+        function updatePerformanceStats() {
+            document.getElementById('cacheHits').textContent = cacheHits;
+            document.getElementById('cacheMisses').textContent = cacheMisses;
+            
+            if (responseTimes.length > 0) {
+                const avgTime = Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length);
+                document.getElementById('avgResponseTime').textContent = avgTime;
+                
+                // 성능 향상 계산 (캐시 히트율 기준)
+                const hitRate = cacheHits / (cacheHits + cacheMisses) * 100;
+                document.getElementById('performanceGain').textContent = `${hitRate.toFixed(1)}%`;
+            }
+        }
+
+        // UI 헬퍼 함수들
+        function updateStatus(elementId, text) {
+            document.getElementById(elementId).textContent = text;
+        }
+
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<div class="log-entry log-info">🚀 로그 지워짐</div>';
+            cacheHits = 0;
+            cacheMisses = 0;
+            responseTimes = [];
+            updatePerformanceStats();
+        }
+
+        // 페이지 로드 시 Socket 연결
+        window.onload = function() {
+            connectSocket();
+            addLog('🎯 Redis 캐싱 테스트 페이지 로드 완료', 'info');
+            addLog('📋 사용법: 1) 레이스 재생 시작 2) 재생 버튼 3) 캐시 성능 테스트', 'info');
+        };
+    </script>
+</body>
+</html>

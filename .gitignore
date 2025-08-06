@@ -58,3 +58,12 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+dump/
+etc/
+.venv/
+*.sqlite
+etl_test.log
+apps/api/prisma/dump/
+.vscode/
+cache/
+.cache/

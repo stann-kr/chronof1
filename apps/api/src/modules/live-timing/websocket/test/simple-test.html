@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단한 WebSocket 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .connected { background-color: #d4edda; }
+        .disconnected { background-color: #f8d7da; }
+        .loading { background-color: #fff3cd; }
+        #logs {
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>ChronoF1 WebSocket 간단 테스트</h1>
+    
+    <div class="controls">
+        <input type="number" id="sessionId" value="1" placeholder="세션 ID" style="padding: 8px; margin-right: 10px;">
+        <button onclick="connect()" id="connectBtn">연결</button>
+        <button onclick="disconnect()" id="disconnectBtn" disabled>연결해제</button>
+        <button onclick="joinSession()" id="joinBtn" disabled>세션 참가</button>
+        <button onclick="startReplay()" id="startBtn" disabled>재생 시작</button>
+        <button onclick="stopReplay()" id="stopBtn" disabled>재생 정지</button>
+        <button onclick="clearLogs()">로그 지우기</button>
+    </div>
+    
+    <div id="status" class="status disconnected">연결되지 않음</div>
+    
+    <div id="logs"></div>
+    
+    <table id="dataTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>포지션</th>
+                <th>차량번호</th>
+                <th>드라이버</th>
+                <th>팀</th>
+                <th>속도</th>
+                <th>상태</th>
+            </tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+    </table>
+
+    <script>
+        let socket;
+        let currentSessionId;
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = {
+                'info': '[INFO]',
+                'success': '[SUCCESS]',
+                'error': '[ERROR]',
+                'warn': '[WARN]'
+            }[type] || '[INFO]';
+            
+            logs.textContent += `${timestamp} ${prefix} ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        function connect() {
+            log('연결 시도 중...');
+            updateStatus('연결 중...', 'loading');
+            
+            socket = io('http://localhost:3000/live-timing', {
+                transports: ['websocket', 'polling'],
+                timeout: 10000,
+                forceNew: true
+            });
+            
+            socket.on('connect', () => {
+                log('✅ WebSocket 연결 성공! Socket ID: ' + socket.id);
+                updateStatus('연결됨', 'connected');
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+                document.getElementById('joinBtn').disabled = false;
+            });
+            
+            socket.on('disconnect', () => {
+                log('❌ WebSocket 연결 해제됨');
+                updateStatus('연결 해제됨', 'disconnected');
+                resetButtons();
+            });
+            
+            socket.on('connect_error', (error) => {
+                log('❌ 연결 실패: ' + error.message);
+                updateStatus('연결 실패', 'disconnected');
+                resetButtons();
+            });
+            
+            // 모든 이벤트 수신
+            socket.onAny((eventName, ...args) => {
+                log(`📨 이벤트 수신: ${eventName}`, 'success');
+                console.log('Event:', eventName, 'Data:', args);
+                
+                if (eventName === 'message' && args[0]) {
+                    handleMessage(args[0]);
+                }
+            });
+            
+            // 직접 이벤트 핸들러도 추가
+            socket.on('message', (data) => {
+                log(`📩 Message 이벤트: ${data.type}`, 'success');
+                handleMessage(data);
+            });
+            
+            socket.on('timing-update', (data) => {
+                log(`📊 Timing-update 이벤트 직접 수신`, 'success');
+                handleMessage(data);
+            });
+        }
+        
+        function handleMessage(data) {
+            log(`메시지 처리: ${data.type}`, 'info');
+            
+            if (data.type === 'SESSION_INFO') {
+                log(`세션 정보: ${data.session.name}`, 'success');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = false;
+            }
+            
+            if (data.type === 'TIMING_UPDATE') {
+                log(`📊 타이밍 업데이트 - 시간: ${data.sessionTime?.toFixed(1)}초, 드라이버: ${data.drivers?.length || 0}명`, 'success');
+                updateTable(data);
+            }
+            
+            if (data.type === 'ERROR') {
+                log(`❌ 서버 오류: ${data.message}`, 'error');
+            }
+        }
+        
+        function updateTable(data) {
+            const table = document.getElementById('dataTable');
+            const tbody = document.getElementById('dataBody');
+            
+            if (data.drivers && data.drivers.length > 0) {
+                table.style.display = 'table';
+                
+                tbody.innerHTML = data.drivers.map(driver => `
+                    <tr>
+                        <td>${driver.position || '-'}</td>
+                        <td>${driver.carNumber || '-'}</td>
+                        <td>${driver.driver?.code || driver.driver?.fullName || '-'}</td>
+                        <td>${driver.team?.shortName || driver.team?.name || '-'}</td>
+                        <td>${driver.speed ? Math.round(driver.speed) + ' km/h' : '-'}</td>
+                        <td>${driver.status || '-'}</td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6">데이터 없음</td></tr>';
+            }
+        }
+        
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+            log('연결 해제');
+            updateStatus('연결 해제됨', 'disconnected');
+            resetButtons();
+        }
+        
+        function resetButtons() {
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('joinBtn').disabled = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+        }
+        
+        function joinSession() {
+            const sessionId = document.getElementById('sessionId').value;
+            if (socket && sessionId) {
+                currentSessionId = parseInt(sessionId);
+                log(`🔄 세션 ${sessionId} 참가 요청`);
+                
+                socket.emit('join-session', { 
+                    sessionId: currentSessionId 
+                });
+            }
+        }
+        
+        function startReplay() {
+            if (socket && currentSessionId) {
+                log(`▶️ 세션 ${currentSessionId} 재생 시작 요청`);
+                
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'START',
+                    speed: 1
+                });
+            }
+        }
+        
+        function stopReplay() {
+            if (socket && currentSessionId) {
+                log(`⏹️ 세션 ${currentSessionId} 재생 정지 요청`);
+                
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'STOP'
+                });
+            }
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').textContent = '';
+        }
+        
+        // 페이지 로드 시
+        document.addEventListener('DOMContentLoaded', () => {
+            log('간단한 WebSocket 테스트 클라이언트 시작');
+        });
+    </script>
+</body>
+</html>

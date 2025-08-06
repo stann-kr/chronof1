@@ -16,7 +16,10 @@ Historic Formula 1 results 조회 + 2018 시즌 이후 Live‑Timing Replay 를 
 | **배포**        | 미정                                                 | Docker Compose(Synology)                         |
 
 ---
+
 ## 2. 개발 환경 설정
+
+- 코드 작성 및 수정후 Swagger API 문서 최신화
 
 ## 3. 네이밍·코딩 규칙
 

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { PrismaService } from './prisma/prisma.service';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,15 +15,23 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
+  app.setGlobalPrefix('api');
 
-  // Prisma 종료 훅 등록
-  const prismaService = app.get(PrismaService);
-  await prismaService.enableShutdownHooks(app);
+  // Swagger 문서화 설정
+  const config = new DocumentBuilder()
+    .setTitle('ChronoF1 API')
+    .setDescription('Historic Formula 1 & Live Timing API 문서')
+    .setVersion('1.0')
+    .addTag('레이스 결과')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
 
   // 포트 설정 및 시작
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`ChronoF1 API server started on port ${port}`);
+  console.log(`Swagger 문서: http://localhost:${port}/api/docs`);
 }
 
 bootstrap();

@@ -1,8 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ChronoF1 통합 스키마 파일
+// 하나의 스키마에 모든 테이블을 관리하고 접두어로 도메인을 구분합니다.
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -10,91 +11,441 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 드라이버 정보
-model Driver {
-  driver_id     Int      @id
-  driver_number String   @unique
-  code          String
-  full_name     String
-  first_name    String
-  last_name     String
-  team_name     String
-  country_code  String
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+// ==== 공통(Common) 모델 ====
 
+// 시즌 정보 모델
+model CommonSeason {
+  id         Int       @id @default(autoincrement())
+  year       Int       @unique @map("year")
+  name       String?   @map("name") // 시즌 공식 명칭 (예: "FIA Formula One World Championship 2023")
+  startDate  DateTime? @map("start_date")
+  endDate    DateTime? @map("end_date")
+  
+  // 관계 - 공통
+  events     CommonEvent[]
+  seasonTeamDrivers CommonSeasonTeamDriver[] // 시즌별 팀-드라이버 관계
+  
+  // 관계 - 라이브
+  liveEvents LiveEvent[]
+  
+  @@map("common_seasons")
+}
+
+// 서킷(트랙) 정보 모델
+model CommonCircuit {
+  id          Int       @id @default(autoincrement())
+  name        String    @map("name")
+  shortName   String?   @map("short_name") // 짧은 이름 (예: "Monza")
+  locality    String?   @map("locality")
+  country     String?   @map("country")
+  latitude    Float?    @map("latitude")
+  longitude   Float?    @map("longitude")
+  length      Float?    @map("length") // 트랙 길이 (km)
+  turns       Int?      @map("turns") // 코너 수
+  
+  // 관계 - 공통
+  events      CommonEvent[]
+  
+  // 관계 - 라이브
+  liveEvents    LiveEvent[]
+  
+  @@map("common_circuits")
+}
+
+// 이벤트(그랑프리) 모델
+model CommonEvent {
+  id            Int       @id @default(autoincrement())
+  seasonId      Int       @map("season_id")
+  circuitId     Int       @map("circuit_id")
+  round         Int       @map("round") // 시즌에서의 라운드 번호
+  name          String    @map("name") // 그랑프리 이름 (예: "Italian Grand Prix")
+  shortName     String?   @map("short_name") // 짧은 이름 (예: "Italian GP")
+  eventStart    DateTime  @map("event_start") // 이벤트 시작일
+  eventEnd      DateTime  @map("event_end") // 이벤트 종료일
+  status        String?   @map("status") // 이벤트 상태 (계획됨, 진행 중, 완료됨 등)
+  
+  // 관계 - 공통
+  season        CommonSeason    @relation(fields: [seasonId], references: [id])
+  circuit       CommonCircuit   @relation(fields: [circuitId], references: [id])
+  sessions      CommonSession[]
+  
+  // 관계 - 라이브
+  liveSessions LiveSession[]
+  liveEvents LiveEvent[] // 양방향 관계 추가
+  
+  @@unique([seasonId, round])
+  @@map("common_events")
+}
+
+// 세션 모델 (연습, 예선, 스프린트, 레이스)
+model CommonSession {
+  id            Int       @id @default(autoincrement())
+  eventId       Int       @map("event_id")
+  type          String    @map("type") // FP1, FP2, FP3, Q, SQ, S, R 등
+  name          String    @map("name") // 세션 이름 (예: "Practice 1", "Qualifying", "Race")
+  date          DateTime  @map("date") // 세션 날짜 및 시간
+  duration      Int?      @map("duration") // 세션 지속 시간 (분)
+  status        String?   @map("status") // 세션 상태 (계획됨, 진행 중, 플래그, 완료됨 등)
+  resultsFetched Boolean  @default(false) @map("results_fetched") // 데이터 적재 완료 여부
+  
+  // 관계 - 공통
+  event         CommonEvent     @relation(fields: [eventId], references: [id])
+  
+  // 관계 - 라이브
+  liveSessions  LiveSession[]
+  liveWeatherData LiveWeatherData[]
+  liveSessionMessages LiveSessionMessage[]
+  liveSessionStatus LiveSessionStatus[]
+  liveTrackStatus LiveTrackStatus[]
+  
+  @@map("common_sessions")
+}
+
+// 드라이버 모델
+model CommonDriver {
+  id            Int       @id @default(autoincrement())
+  number        Int?      @unique @map("number") // 드라이버 번호
+  code          String    @unique @map("code") // 3글자 코드 (예: "HAM")
+  fullName      String    @map("full_name") // 전체 이름
+  dob           DateTime? @map("dob") // 생년월일
+  nationality   String?   @map("nationality")
+  
+  // 관계 - 공통
+  seasonTeamDrivers CommonSeasonTeamDriver[] // 시즌별 팀-드라이버 관계
+  
+  // 관계 - 라이브
+  liveDriverSessions  LiveDriverSession[]
+  
+  @@map("common_drivers")
+}
+
+// 팀(컨스트럭터) 모델
+model CommonTeam {
+  id            Int       @id @default(autoincrement())
+  name          String    @map("name") // 팀 이름 (예: "Mercedes-AMG Petronas F1 Team")
+  shortName     String?   @map("short_name") // 짧은 이름 (예: "Mercedes")
+  nationality   String?   @map("nationality")
+  color         String?   @map("color") // 팀 색상 코드 (HEX)
+  
+  // 관계 - 공통
+  seasonTeamDrivers CommonSeasonTeamDriver[] // 시즌별 팀-드라이버 관계
+  
+  // 관계 - 라이브
+  liveDriverSessions LiveDriverSession[]
+  
+  @@map("common_teams")
+}
+
+// 시즌별 팀-드라이버 관계 모델
+model CommonSeasonTeamDriver {
+  id            Int         @id @default(autoincrement())
+  seasonId      Int         @map("season_id")
+  teamId        Int         @map("team_id")
+  driverId      Int         @map("driver_id")
+  
+  driverNumber  Int?        @map("driver_number") // 해당 시즌의 드라이버 번호
+  isPrimary     Boolean     @default(true) @map("is_primary") // 주 드라이버 여부
+  fromRound     Int?        @map("from_round") // 시작 라운드 (시즌 중간에 팀을 바꿀 경우)
+  toRound       Int?        @map("to_round") // 종료 라운드
+  fromDate      DateTime?   @map("from_date") // 시작 날짜
+  toDate        DateTime?   @map("to_date") // 종료 날짜
+  
   // 관계
-  stints  Stint[]
-  timings Timing[]
-
-  @@map("drivers")
+  season        CommonSeason  @relation(fields: [seasonId], references: [id])
+  team          CommonTeam    @relation(fields: [teamId], references: [id])
+  driver        CommonDriver  @relation(fields: [driverId], references: [id])
+  
+  @@unique([seasonId, teamId, driverId, fromRound])
+  @@map("common_season_team_drivers")
 }
 
-// 세션 정보 (레이스, 퀄리파잉 등)
-model Session {
-  session_key       String   @id
-  year              Int
-  round             Int
-  event_name        String
-  session_name      String
-  session_type      String
-  circuit_name      String
-  circuit_short_name String
-  start_date        DateTime
-  end_date          DateTime
-  has_timing_data   Boolean  @default(false)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
 
+// ==== 라이브(Live) 모델 ====
+
+// 라이브 이벤트 모델 (라이브 그랑프리)
+model LiveEvent {
+  id          Int           @id @default(autoincrement())
+  commonEventId Int          @map("common_event_id")
+  seasonId    Int           @map("season_id") 
+  circuitId   Int           @map("circuit_id")
+  
   // 관계
-  stints  Stint[]
-  timings Timing[]
-
-  @@map("sessions")
+  commonEvent CommonEvent    @relation(fields: [commonEventId], references: [id])
+  season      CommonSeason   @relation(fields: [seasonId], references: [id])
+  circuit     CommonCircuit  @relation(fields: [circuitId], references: [id])
+  sessions    LiveSession[]
+  
+  @@map("live_events")
 }
 
-// 타이밍 데이터
-model Timing {
-  id             String   @id @default(uuid())
-  session_key    String
-  session        Session  @relation(fields: [session_key], references: [session_key])
-  frame_number   Int
-  driver_number  String
-  driver         Driver   @relation(fields: [driver_number], references: [driver_number])
-  position       Int
-  gap_to_leader  Float?
-  interval       Float?
-  last_lap_time  Float?
-  best_lap_time  Float?
-  sector1_time   Float?
-  sector2_time   Float?
-  sector3_time   Float?
-  compound       String?
-  tyre_age       Int?
-  timestamp      DateTime
-  created_at     DateTime @default(now())
-
-  @@index([session_key, frame_number])
-  @@index([driver_number, session_key])
-  @@map("timings")
+// 라이브 세션 모델
+model LiveSession {
+  id            Int           @id @default(autoincrement())
+  liveEventId   Int           @map("live_event_id")
+  commonSessionId Int          @map("common_session_id")
+  commonEventId Int           @map("common_event_id")
+  
+  // 관계
+  liveEvent     LiveEvent     @relation(fields: [liveEventId], references: [id])
+  commonSession CommonSession @relation(fields: [commonSessionId], references: [id])
+  commonEvent   CommonEvent   @relation(fields: [commonEventId], references: [id])
+  driverSessions LiveDriverSession[]
+  
+  @@map("live_sessions")
 }
 
-// 타이어 스틴트 정보
-model Stint {
-  stint_id        String   @id @default(uuid())
-  session_key     String
-  session         Session  @relation(fields: [session_key], references: [session_key])
-  driver_number   String
-  driver          Driver   @relation(fields: [driver_number], references: [driver_number])
-  compound        String
-  stint_number    Int
-  stint_start_lap Int
-  stint_end_lap   Int?
-  stint_compound  String?  // 가이드에 언급된 필드 추가
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+// 드라이버-세션 관계 모델
+model LiveDriverSession {
+  id            Int           @id @default(autoincrement())
+  sessionId     Int           @map("session_id") 
+  driverId      Int           @map("driver_id")
+  teamId        Int           @map("team_id")
+  
+  carNumber     Int           @map("car_number") // 해당 세션의 차량 번호
+  position      Int?          @map("position") // 최종 포지션
+  gridPosition  Int?          @map("grid_position") // 그리드 포지션
+  status        String?       @map("status") // 완주, DNF, DNS 등
+  points        Float?        @map("points") // 획득 포인트
+  
+  // 관계
+  session       LiveSession   @relation(fields: [sessionId], references: [id])
+  driver        CommonDriver  @relation(fields: [driverId], references: [id])
+  team          CommonTeam    @relation(fields: [teamId], references: [id])
+  
+  // 자식 관계
+  laps          LiveLap[]
+  telemetryData LiveTelemetryData[]
+  pitStops      LivePitStop[]
+  tyreStints    LiveTyreStint[]
+  positionData  LivePositionData[]
+  
+  @@unique([sessionId, driverId])
+  @@map("live_driver_sessions")
+}
 
-  @@index([session_key, driver_number])
-  @@map("stints")
+// 랩 데이터 모델
+model LiveLap {
+  id             Int             @id @default(autoincrement())
+  driverSessionId Int             @map("driver_session_id")
+  lapNumber      Int             @map("lap_number") // 랩 번호
+  
+  // 기본 타이밍 데이터
+  lapTime        Float?          @map("lap_time") // 랩 타임 (초)
+  lapTimeString  String?         @map("lap_time_string") // 형식화된 랩 타임 (예: "1:23.456")
+  sector1Time    Float?          @map("sector1_time") // 섹터 1 시간 (초)
+  sector2Time    Float?          @map("sector2_time") // 섹터 2 시간 (초)
+  sector3Time    Float?          @map("sector3_time") // 섹터 3 시간 (초)
+  
+  // 세션 시간 데이터 (FastF1 추가 필드)
+  sessionTime    Float?          @map("session_time") // 세션 시작부터의 시간 (초)
+  lapStartTime   DateTime?       @map("lap_start_time") // 랩 시작 시간
+  lapStartDate   DateTime?       @map("lap_start_date") // 랩 시작 날짜
+  sector1SessionTime Float?      @map("sector1_session_time") // 섹터1 완료 세션 시간
+  sector2SessionTime Float?      @map("sector2_session_time") // 섹터2 완료 세션 시간  
+  sector3SessionTime Float?      @map("sector3_session_time") // 섹터3 완료 세션 시간
+  
+  // 피트 관련 데이터
+  pitIn          Boolean?        @map("pit_in") // 피트인 여부
+  pitOut         Boolean?        @map("pit_out") // 피트아웃 여부
+  pitInTime      DateTime?       @map("pit_in_time") // 실제 피트인 시간
+  pitOutTime     DateTime?       @map("pit_out_time") // 실제 피트아웃 시간
+  
+  // 속도 트랩 데이터
+  speedI1        Float?          @map("speed_i1") // 섹터1 속도트랩 (km/h)
+  speedI2        Float?          @map("speed_i2") // 섹터2 속도트랩 (km/h)
+  speedFL        Float?          @map("speed_fl") // 피니시라인 속도트랩 (km/h)
+  speedST        Float?          @map("speed_st") // 스트레이트 속도트랩 (km/h)
+  
+  // 타이어 관련 데이터
+  tyreCompound   String?         @map("tyre_compound") // 타이어 컴파운드 (예: "SOFT", "MEDIUM", "HARD")
+  tyreLife       Int?            @map("tyre_life") // 타이어 수명 (랩 수)
+  freshTyre      Boolean?        @map("fresh_tyre") // 새 타이어 여부
+  
+  // 상태 및 유효성 데이터
+  isPersonalBest Boolean?        @map("is_personal_best") // 개인 최고 랩 여부
+  isValid        Boolean?        @map("is_valid") // 유효한 랩 여부
+  isAccurate     Boolean?        @map("is_accurate") // 정확도 플래그
+  trackStatus    String?         @map("track_status") // 트랙 상태
+  deleted        Boolean?        @map("deleted") // 랩 삭제 여부
+  deletedReason  String?         @map("deleted_reason") // 삭제 이유
+  fastF1Generated Boolean?       @map("fast_f1_generated") // FastF1에서 생성된 랩 여부
+  
+  // 포지션 데이터
+  position       Int?            @map("position") // 랩 완료 시 포지션
+  
+  // 관계
+  driverSession  LiveDriverSession @relation(fields: [driverSessionId], references: [id])
+  
+  @@unique([driverSessionId, lapNumber])
+  @@map("live_laps")
+}
+
+// 텔레메트리 데이터 모델
+model LiveTelemetryData {
+  id             Int             @id @default(autoincrement())
+  driverSessionId Int             @map("driver_session_id")
+  timestamp      DateTime        @map("timestamp") // 데이터 타임스탬프
+  
+  // 시간 관련 데이터
+  lapNumber      Int?            @map("lap_number") // 랩 번호
+  sessionTime    Float?          @map("session_time") // 세션 시작부터의 시간 (초)
+  lapTime        Float?          @map("lap_time") // 랩 시작부터의 시간 (초)
+  
+  // 차량 데이터 (Car Data)
+  speed          Float?          @map("speed") // 속도 (km/h)
+  rpm            Float?          @map("rpm") // 엔진 RPM
+  gear           Int?            @map("gear") // 기어 (1-8, 0=중립, -1=후진)
+  throttle       Float?          @map("throttle") // 스로틀 (0-100%)
+  brake          Boolean?        @map("brake") // 브레이크 (false=안눌림, true=눌림)
+  drs            Int?            @map("drs")
+  
+  // 계산된 데이터
+  distance       Float?          @map("distance")
+  relativeDistance Float?        @map("relative_distance")
+  driverAhead    String?         @map("driver_ahead")
+  distanceToDriverAhead Float?   @map("distance_to_driver_ahead")
+  
+  // 메타데이터
+  source         String?         @map("source") // 데이터 소스: 'car', 'pos', 'interpolated'
+  
+  // 관계
+  driverSession  LiveDriverSession @relation(fields: [driverSessionId], references: [id])
+  
+  @@index([driverSessionId, timestamp])
+  @@index([driverSessionId, lapNumber])
+  @@map("live_telemetry_data")
+}
+
+// 피트스톱 모델
+model LivePitStop {
+  id              Int             @id @default(autoincrement())
+  driverSessionId Int             @map("driver_session_id")
+  lapNumber       Int             @map("lap_number") // 피트스톱 랩 번호
+  
+  timestamp       DateTime?       @map("timestamp") // 피트스톱 발생 시간
+  sessionTime     Float?          @map("session_time") // 세션 시작부터의 시간 (초)
+  stopTime        Float?          @map("stop_time") // 피트스톱 시간 (초)
+  stopTimeString  String?         @map("stop_time_string") // 형식화된 피트스톱 시간
+  totalDuration   Float?          @map("total_duration") // 전체 피트스톱 소요 시간 (피트 레인 포함)
+  
+  // 관계
+  driverSession   LiveDriverSession @relation(fields: [driverSessionId], references: [id])
+  
+  @@unique([driverSessionId, lapNumber])
+  @@map("live_pit_stops")
+}
+
+// 타이어 스틴트 모델
+model LiveTyreStint {
+  id              Int             @id @default(autoincrement())
+  driverSessionId Int             @map("driver_session_id")
+  stintNumber     Int             @map("stint_number") // 스틴트 번호
+  
+  compound        String?         @map("compound") // 타이어 컴파운드
+  startLap        Int?            @map("start_lap") // 시작 랩
+  endLap          Int?            @map("end_lap") // 종료 랩
+  laps            Int?            @map("laps") // 스틴트에서 주행한 랩 수
+  
+  // 관계
+  driverSession   LiveDriverSession @relation(fields: [driverSessionId], references: [id])
+  
+  @@unique([driverSessionId, stintNumber])
+  @@map("live_tyre_stints")
+}
+
+// 트랙 위치 데이터 모델 (실시간 위치 추적)
+model LivePositionData {
+  id              Int             @id @default(autoincrement())
+  driverSessionId Int             @map("driver_session_id")
+  timestamp       DateTime        @map("timestamp") // 데이터 타임스탬프
+  sessionTime     Float?          @map("session_time") // 세션 시작부터의 시간 (초)
+  
+  x               Float           @map("x") // X 좌표
+  y               Float           @map("y") // Y 좌표
+  z               Float?          @map("z") // Z 좌표 (높이)
+  status          String?         @map("status") // OnTrack/OffTrack 상태
+  
+  // 관계
+  driverSession   LiveDriverSession @relation(fields: [driverSessionId], references: [id])
+  
+  @@index([driverSessionId, timestamp])
+  @@map("live_position_data")
+}
+
+// 날씨 데이터 모델
+model LiveWeatherData {
+  id              Int           @id @default(autoincrement())
+  sessionId       Int           @map("session_id")
+  timestamp       DateTime      @map("timestamp") // 데이터 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
+  
+  airTemp         Float?        @map("air_temp") // 기온 (°C)
+  trackTemp       Float?        @map("track_temp") // 트랙 온도 (°C)
+  humidity        Float?        @map("humidity") // 습도 (%)
+  pressure        Float?        @map("pressure") // 기압 (hPa)
+  windSpeed       Float?        @map("wind_speed") // 풍속 (km/h)
+  windDirection   Float?        @map("wind_direction") // 풍향 (도)
+  isRaining       Boolean?      @map("is_raining") // 비 여부
+  
+  // 관계
+  session         CommonSession @relation(fields: [sessionId], references: [id])
+  
+  @@index([sessionId, timestamp])
+  @@map("live_weather_data")
+}
+
+// 세션 메시지 모델 (플래그, 안전차, VSC 등 공식 메시지)
+model LiveSessionMessage {
+  id              Int           @id @default(autoincrement())
+  sessionId       Int           @map("session_id")
+  timestamp       DateTime      @map("timestamp") // 메시지 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
+  
+  category        String?       @map("category") // 메시지 카테고리 (FLAG, SAFETY_CAR, VSC 등)
+  message         String        @map("message") // 메시지 내용
+  status          String?       @map("status") // 메시지 상태 (ACTIVE, INACTIVE 등)
+  flagType        String?       @map("flag_type") // 플래그 유형 (YELLOW, RED, BLUE 등)
+  scope           String?       @map("scope") // 적용 범위 (TRACK, SECTOR1, SECTOR2, SECTOR3 등)
+  
+  // 관계
+  session         CommonSession @relation(fields: [sessionId], references: [id])
+  
+  @@index([sessionId, timestamp])
+  @@map("live_session_messages")
+}
+
+// 세션 상태 모델 (FastF1 Session Status)
+model LiveSessionStatus {
+  id              Int           @id @default(autoincrement())
+  sessionId       Int           @map("session_id")
+  timestamp       DateTime      @map("timestamp") // 상태 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
+  
+  status          String        @map("status") // 세션 상태 (Started, Aborted, Finished 등)
+  timeRemaining   Int?          @map("time_remaining") // 남은 시간 (초)
+  
+  // 관계
+  session         CommonSession @relation(fields: [sessionId], references: [id])
+  
+  @@unique([sessionId, timestamp])
+  @@index([sessionId, timestamp])
+  @@map("live_session_status")
+}
+
+// 트랙 상태 모델 (FastF1 Track Status)
+model LiveTrackStatus {
+  id              Int           @id @default(autoincrement())
+  sessionId       Int           @map("session_id")
+  timestamp       DateTime      @map("timestamp") // 상태 타임스탬프
+  sessionTime     Float?        @map("session_time") // 세션 시작부터의 시간 (초)
+  
+  status          String        @map("status") // 트랙 상태 번호 (1=Green, 2=Yellow, 4=SC, 6=VSC, 7=Red)
+  message         String?       @map("message") // 상태 메시지
+  
+  // 관계
+  session         CommonSession @relation(fields: [sessionId], references: [id])
+  
+  @@unique([sessionId, timestamp])
+  @@index([sessionId, timestamp])
+  @@map("live_track_status")
 }

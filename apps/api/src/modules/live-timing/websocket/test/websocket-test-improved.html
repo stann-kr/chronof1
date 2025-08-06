@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoF1 라이브 타이밍 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .status.connected { background: rgba(34, 197, 94, 0.3); }
+        .status.disconnected { background: rgba(239, 68, 68, 0.3); }
+        .status.loading { background: rgba(251, 191, 36, 0.3); }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        button:hover { background: rgba(59, 130, 246, 1); }
+        button:disabled { 
+            background: rgba(107, 114, 128, 0.5); 
+            cursor: not-allowed; 
+        }
+        
+        input, select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        input::placeholder { color: rgba(255, 255, 255, 0.7); }
+        
+        .timing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .timing-table th, .timing-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timing-table th {
+            background: rgba(59, 130, 246, 0.3);
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        .timing-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 팀 컬러 표시 */
+        .team-color {
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border-radius: 2px;
+        }
+        
+        /* 프로그레스 바 스타일 */
+        .progress-bar-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 15px 0;
+            height: 25px;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e 0%, #3b82f6 50%, #ef4444 100%);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            font-weight: bold;
+            min-width: 50px;
+            transition: width 0.1s ease;
+        }
+        
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        .log-entry.error { color: #ef4444; }
+        .log-entry.success { color: #22c55e; }
+        .log-entry.info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏎️ ChronoF1 라이브 타이밍 테스트</h1>
+        
+        <div id="status" class="status disconnected">
+            ❌ 연결되지 않음
+        </div>
+
+        <div class="controls">
+            <input type="number" id="sessionId" placeholder="세션 ID" value="1">
+            <button onclick="connect()" id="connectBtn">연결</button>
+            <button onclick="disconnect()" id="disconnectBtn" disabled>연결 해제</button>
+            <button onclick="joinSession()" id="joinBtn" disabled>세션 참가</button>
+            
+            <input type="number" id="seekTime" placeholder="이동할 시간(초)" value="0">
+            <button onclick="seek()" id="seekBtn" disabled>시간 이동</button>
+            <button onclick="seekReplay(-30)" id="seekBackBtn" disabled>30초 뒤로</button>
+            <button onclick="seekReplay(30)" id="seekForwardBtn" disabled>30초 앞으로</button>
+            
+            <select id="speedSelect" disabled>
+                <option value="0.5">0.5x</option>
+                <option value="1" selected>1x</option>
+                <option value="2">2x</option>
+                <option value="5">5x</option>
+            </select>
+            <button onclick="changeSpeed()" id="speedBtn" disabled>속도 변경</button>
+            
+            <button onclick="pause()" id="pauseBtn" disabled>일시정지</button>
+            <button onclick="play()" id="playBtn" disabled>재생</button>
+            <button onclick="stop()" id="stopBtn" disabled>정지</button>
+            <button onclick="clearLogs()" class="clear-btn">로그 지우기</button>
+        <button onclick="saveLogs()" class="clear-btn">로그 저장</button>
+        </div>
+
+        <!-- 세션 정보 및 프로그레스 바 -->
+        <div class="performance-stats">
+            <div class="stat-card" style="grid-column: 1 / -1; text-align: left;">
+                <div id="session-info">
+                    <strong>세션 정보를 불러오는 중...</strong>
+                </div>
+                <div class="progress-bar-container" onclick="seekFromProgressBar(event)">
+                    <div class="progress-bar" id="progress-bar">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="performance-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="connectionTime">-</div>
+                <div class="stat-label">초기 연결 시간 (ms)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="updateCount">0</div>
+                <div class="stat-label">받은 업데이트 수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgLatency">-</div>
+                <div class="stat-label">평균 지연시간 (ms)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentTime">00:00</div>
+                <div class="stat-label">현재 재생 시간</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="driverCount">0</div>
+                <div class="stat-label">드라이버 수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="sessionStatus">-</div>
+                <div class="stat-label">세션 상태</div>
+            </div>
+        </div>
+
+        <table class="timing-table" id="timingTable">
+            <thead>
+                <tr>
+                    <th>포지션</th>
+                    <th>차량번호</th>
+                    <th>드라이버</th>
+                    <th>팀</th>
+                    <th>랩</th>
+                    <th>현재 랩타임</th>
+                    <th>베스트 랩타임</th>
+                    <th>GAP</th>
+                    <th>S1</th>
+                    <th>S2</th>
+                    <th>S3</th>
+                    <th>속도</th>
+                    <th>스로틀</th>
+                    <th>브레이크</th>
+                    <th>기어</th>
+                    <th>RPM</th>
+                    <th>DRS</th>
+                    <th>상태</th>
+                </tr>
+            </thead>
+            <tbody id="timingBody">
+                <tr><td colspan="18" style="text-align: center; padding: 40px;">연결을 시작하세요</td></tr>
+            </tbody>
+        </table>
+
+        <div class="log-container">
+            <div id="logs"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+        let updateCount = 0;
+        let connectStartTime = 0;
+        let latencySum = 0;
+        let latencyCount = 0;
+        let currentSessionId = null;
+        let maxSessionTime = 0;
+        let currentSessionTime = 0;
+        
+        // 🚀 새로운 청크 기반 캐시 시스템
+        let chunkCache = new Map(); // 청크 데이터 캐시
+        let currentChunkData = null; // 현재 재생 위치의 데이터
+        let animationFrameId = null; // 100ms 애니메이션 프레임 ID
+        let lastUpdateTime = 0;
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const now = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${now}] ${message}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        function updateStats() {
+            document.getElementById('updateCount').textContent = updateCount;
+            if (latencyCount > 0) {
+                document.getElementById('avgLatency').textContent = 
+                    Math.round(latencySum / latencyCount);
+            }
+        }
+        
+        function formatTime(milliseconds) {
+            if (!milliseconds || milliseconds <= 0) return '-';
+            
+            // 기존 방식과의 호환성을 위해 두 가지 방식 지원
+            if (milliseconds < 100000) { // 100초 미만이면 밀리초로 간주
+                const totalSeconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                const ms = Math.floor((milliseconds % 1000) / 10);
+                return `${minutes}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+            } else { // 큰 값이면 Date 객체 방식 사용
+                const date = new Date(milliseconds);
+                const minutes = String(date.getUTCMinutes());
+                const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+                const ms = String(Math.floor(date.getUTCMilliseconds() / 10)).padStart(2, '0');
+                return `${minutes}:${seconds}.${ms}`;
+            }
+        }
+        
+        function formatSessionTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function connect() {
+            const sessionId = document.getElementById('sessionId').value;
+            if (!sessionId) {
+                alert('세션 ID를 입력하세요');
+                return;
+            }
+            
+            connectStartTime = Date.now();
+            updateStatus('🔄 연결 중...', 'loading');
+            log('연결 시도 중...', 'info');
+            
+            try {
+                socket = io('http://localhost:3000/live-timing', {
+                    transports: ['websocket', 'polling'],
+                    timeout: 10000,
+                    forceNew: true
+                });
+                
+                socket.on('connect', () => {
+                    const connectionTime = Date.now() - connectStartTime;
+                    updateStatus('✅ 연결됨', 'connected');
+                    log(`연결 성공! (${connectionTime}ms)`, 'success');
+                    log(`Socket ID: ${socket.id}`, 'info');
+                    
+                    document.getElementById('connectionTime').textContent = connectionTime;
+                    document.getElementById('connectBtn').disabled = true;
+                    document.getElementById('disconnectBtn').disabled = false;
+                    document.getElementById('joinBtn').disabled = false;
+                    document.getElementById('seekBtn').disabled = false;
+                    document.getElementById('seekBackBtn').disabled = false;
+                    document.getElementById('seekForwardBtn').disabled = false;
+                    document.getElementById('speedSelect').disabled = false;
+                    document.getElementById('speedBtn').disabled = false;
+                    document.getElementById('pauseBtn').disabled = false;
+                    document.getElementById('playBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = false;
+                });
+                
+                // 메시지 처리 함수
+                function handleServerMessage(data) {
+                    log(`메시지 처리: ${data.type || 'NO_TYPE'} | 데이터: ${JSON.stringify(data).substring(0, 100)}...`, 'info');
+                    
+                    if (data.type === 'ROOM_JOIN_CONFIRMED') {
+                        log(`🎉 Room 참가 확인됨! 세션 ${data.sessionId}, 클라이언트 수: ${data.roomClientsCount}명`, 'success');
+                        updateStatus('✅ Room 참가 완료', 'connected');
+                        return;
+                    }
+                    
+                    if (data.type === 'SESSION_INFO') {
+                        maxSessionTime = data.session.maxSessionTime || data.session.duration || 7200;
+                        updateStatus('✅ 세션 참가 완료', 'connected');
+                        log(`세션 정보 받음: ${data.session.name} (최대 시간: ${maxSessionTime}초)`, 'success');
+                        return;
+                    }
+                    
+                    // 🚀 새로운 청크 데이터 처리
+                    if (data.type === 'CHUNK_DATA') {
+                        handleChunkData(data);
+                        return;
+                    }
+                    
+                    // 📍 재생 위치 업데이트 처리  
+                    if (data.type === 'PLAYBACK_POSITION') {
+                        handlePlaybackPosition(data);
+                        return;
+                    }
+                    
+                    // 기존 TIMING_UPDATE 처리 (호환성)
+                    if (data.type === 'TIMING_UPDATE') {
+                        // 첫 번째 타이밍 업데이트를 받으면 재생 중 상태로 변경
+                        if (updateCount === 0) {
+                            updateStatus('▶️ 재생 중', 'connected');
+                            log('🎉 첫 번째 타이밍 업데이트 받음! 재생 시작됨', 'success');
+                        }
+                        
+                        const receiveTime = Date.now();
+                        updateCount++;
+                        
+                        // 지연시간 계산 (대략적)
+                        const latency = receiveTime - (connectStartTime + (data.sessionTime * 1000));
+                        if (latency > 0 && latency < 5000) { // 합리적인 범위 내의 지연시간만
+                            latencySum += latency;
+                            latencyCount++;
+                        }
+                        
+                        updateStats();
+                        updateTimingDisplay(data);
+                        
+                        if (updateCount % 10 === 0) { // 10번마다 로그 (더 자주)
+                            log(`기존 타이밍 업데이트: ${updateCount}번째, 시간: ${formatSessionTime(data.sessionTime)}`, 'success');
+                        }
+                        return;
+                    }
+                    
+                    if (data.type === 'ERROR') {
+                        log(`❌ 서버 오류: ${data.message}`, 'error');
+                    }
+                    
+                    if (data.type === 'CONNECTION_STATUS') {
+                        log(`연결 상태: ${data.status}`, 'info');
+                    }
+                }
+                
+                // 🚀 청크 데이터 처리 함수
+                function handleChunkData(data) {
+                    const chunkKey = `${data.sessionId}_${data.chunkIndex}`;
+                    chunkCache.set(chunkKey, data);
+                    
+                    log(`📦 청크 ${data.chunkIndex} 수신: ${data.startTime}s-${data.endTime}s (${Object.keys(data.timingData).length}개 타임스탬프)`, 'success');
+                    
+                    // 현재 재생 위치에 해당하는 데이터가 있으면 즉시 적용
+                    updateCurrentChunkData();
+                    
+                    // 100ms 부드러운 업데이트 시작 (첫 청크 수신 시)
+                    if (chunkCache.size === 1) {
+                        startSmoothUpdates();
+                    }
+                }
+                
+                // 📍 재생 위치 처리 함수
+                function handlePlaybackPosition(data) {
+                    currentSessionTime = data.currentTime;
+                    
+                    // UI 업데이트
+                    updateTimingDisplay({
+                        sessionTime: data.currentTime,
+                        sessionStatus: data.sessionStatus,
+                        sessionTimeFormatted: data.sessionTimeFormatted,
+                        speed: data.speed
+                    });
+                    
+                    // 10초마다 로그
+                    if (Math.floor(data.currentTime) % 10 === 0 && Math.floor(data.currentTime * 10) % 100 === 0) {
+                        log(`📍 재생 위치: ${data.sessionTimeFormatted || formatSessionTime(data.currentTime)} (${data.speed}x)`, 'info');
+                    }
+                }
+                
+                // 🎯 현재 재생 위치에 맞는 캐시 데이터 찾기
+                function updateCurrentChunkData() {
+                    const currentTime = currentSessionTime;
+                    let bestMatch = null;
+                    let bestTimeDiff = Infinity;
+                    
+                    // 모든 캐시된 청크에서 현재 시간과 가장 가까운 데이터 찾기
+                    for (const [chunkKey, chunkData] of chunkCache.entries()) {
+                        for (const [timestamp, drivers] of Object.entries(chunkData.timingData)) {
+                            const time = parseFloat(timestamp);
+                            const timeDiff = Math.abs(time - currentTime);
+                            
+                            if (timeDiff < bestTimeDiff && timeDiff <= 30) { // 30초 이내
+                                bestTimeDiff = timeDiff;
+                                bestMatch = drivers;
+                            }
+                        }
+                    }
+                    
+                    // 데이터가 있으면 테이블 업데이트
+                    if (bestMatch && bestMatch !== currentChunkData) {
+                        currentChunkData = bestMatch;
+                        updateTimingData(bestMatch);
+                        
+                        // 캐시에서 데이터를 가져왔음을 표시
+                        document.getElementById('driverCount').textContent = `${bestMatch.length} (캐시)`;
+                        updateCount++;
+                        updateStats();
+                    }
+                }
+                
+                // 100ms 간격으로 부드러운 UI 업데이트 시작
+                function startSmoothUpdates() {
+                    if (animationFrameId) {
+                        cancelAnimationFrame(animationFrameId);
+                    }
+                    
+                    function smoothUpdate() {
+                        const now = Date.now();
+                        if (now - lastUpdateTime >= 100) { // 100ms 간격
+                            updateCurrentChunkData();
+                            lastUpdateTime = now;
+                        }
+                        animationFrameId = requestAnimationFrame(smoothUpdate);
+                    }
+                    
+                    log('🚀 100ms 부드러운 업데이트 시작', 'info');
+                    smoothUpdate();
+                }
+                
+                // 부드러운 업데이트 중지
+                function stopSmoothUpdates() {
+                    if (animationFrameId) {
+                        cancelAnimationFrame(animationFrameId);
+                        animationFrameId = null;
+                        log('⏹️ 부드러운 업데이트 중지', 'info');
+                    }
+                }
+                
+                // 모든 Socket.IO 이벤트를 로깅
+                socket.onAny((eventName, ...args) => {
+                    log(`🔔 Socket 이벤트 수신: ${eventName} | 데이터: ${JSON.stringify(args).substring(0, 200)}...`, 'info');
+                });
+                
+                // 서버에서 모든 메시지는 'message' 이벤트로 전송됩니다
+                socket.on('message', (data) => {
+                    log(`📨 'message' 이벤트 수신: ${data.type || 'NO_TYPE'}`, 'info');
+                    handleServerMessage(data);
+                });
+                
+                // 🚀 새로운 청크 데이터 이벤트
+                socket.on('chunk-data', (data) => {
+                    log(`📦 'chunk-data' 이벤트 직접 수신: 청크 ${data.chunkIndex}`, 'info');
+                    if (!data.type) data.type = 'CHUNK_DATA';
+                    handleServerMessage(data);
+                });
+                
+                // 📍 재생 위치 이벤트
+                socket.on('playback-position', (data) => {
+                    // 로그 스팸 방지 - 10초마다만
+                    if (Math.floor(data.currentTime || 0) % 10 === 0 && Math.floor((data.currentTime || 0) * 10) % 100 === 0) {
+                        log(`📍 'playback-position' 이벤트 수신: ${data.currentTime}s`, 'info');
+                    }
+                    if (!data.type) data.type = 'PLAYBACK_POSITION';
+                    handleServerMessage(data);
+                });
+                
+                // timing-update 이벤트도 별도로 수신 (호환성)
+                socket.on('timing-update', (data) => {
+                    log(`⏱️ 'timing-update' 이벤트 직접 수신`, 'info');
+                    if (!data.type) data.type = 'TIMING_UPDATE'; // type이 없는 경우 추가
+                    handleServerMessage(data);
+                });
+                
+                socket.on('disconnect', () => {
+                    updateStatus('❌ 연결 해제됨', 'disconnected');
+                    log('연결이 해제되었습니다', 'error');
+                    stopSmoothUpdates(); // 애니메이션 정지
+                    resetButtons();
+                });
+                
+                socket.on('connect_error', (error) => {
+                    updateStatus('❌ 연결 실패', 'disconnected');
+                    log(`연결 실패: ${error.message}`, 'error');
+                    resetButtons();
+                });
+                
+            } catch (error) {
+                updateStatus('❌ 연결 실패', 'disconnected');
+                log(`연결 오류: ${error.message}`, 'error');
+                resetButtons();
+            }
+        }
+        
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+            resetButtons();
+            updateStatus('❌ 연결 해제됨', 'disconnected');
+            log('연결을 해제했습니다', 'info');
+        }
+        
+        function resetButtons() {
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('joinBtn').disabled = true;
+            document.getElementById('seekBtn').disabled = true;
+            document.getElementById('seekBackBtn').disabled = true;
+            document.getElementById('seekForwardBtn').disabled = true;
+            document.getElementById('speedSelect').disabled = true;
+            document.getElementById('speedBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+        }
+        
+        function seek() {
+            const seekTime = parseInt(document.getElementById('seekTime').value);
+            if (socket && !isNaN(seekTime) && currentSessionId) {
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'SEEK',
+                    timestamp: seekTime
+                });
+                log(`시간 이동: ${seekTime}초`, 'info');
+            }
+        }
+        
+        function changeSpeed() {
+            const speed = parseFloat(document.getElementById('speedSelect').value);
+            if (socket && currentSessionId) {
+                // 속도 변경을 위해 재시작
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'START',
+                    speed: speed
+                });
+                log(`재생 속도 변경: ${speed}x`, 'info');
+            }
+        }
+        
+        function pause() {
+            if (socket && currentSessionId) {
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'PAUSE'
+                });
+                log('재생 일시정지', 'info');
+            }
+        }
+        
+        function play() {
+            if (socket && currentSessionId) {
+                updateStatus('🔄 재생 시작 중...', 'loading');
+                log(`📤 재생 시작 요청 전송중... (세션: ${currentSessionId})`, 'info');
+                
+                const replayData = {
+                    sessionId: currentSessionId,
+                    type: 'START',
+                    speed: parseFloat(document.getElementById('speedSelect').value)
+                };
+                
+                log(`전송할 데이터: ${JSON.stringify(replayData)}`, 'info');
+                socket.emit('replay-control', replayData);
+                log(`✅ replay-control 이벤트 전송 완료`, 'success');
+                
+                // 10초 후에도 타이밍 업데이트를 받지 못했다면 경고
+                setTimeout(() => {
+                    if (updateCount === 0) {
+                        log(`⚠️ 경고: 10초 동안 타이밍 업데이트를 받지 못했습니다`, 'error');
+                        log(`현재 상태 - Socket 연결: ${socket.connected}, 업데이트 수: ${updateCount}`, 'error');
+                        log(`서버에서 데이터를 전송하고 있는지 확인하세요`, 'error');
+                    }
+                }, 10000);
+            } else {
+                log(`❌ 재생 시작 실패 - Socket: ${!!socket}, 세션 ID: ${currentSessionId}`, 'error');
+            }
+        }
+        
+        function joinSession() {
+            const sessionId = document.getElementById('sessionId').value;
+            if (socket && sessionId) {
+                currentSessionId = parseInt(sessionId);
+                updateStatus('🔄 세션 참가 중...', 'loading');
+                log(`📤 세션 ${sessionId} 참가 요청 전송중...`, 'info');
+                log(`Socket 연결 상태: ${socket.connected ? '연결됨' : '연결안됨'}`, 'info');
+                log(`Socket ID: ${socket.id}`, 'info');
+                
+                socket.emit('join-session', { sessionId: currentSessionId });
+                log(`✅ join-session 이벤트 전송 완료: sessionId=${currentSessionId}`, 'success');
+                
+                // 5초 후에도 세션 정보를 받지 못했다면 경고
+                setTimeout(() => {
+                    if (maxSessionTime === 0) {
+                        log(`⚠️ 경고: 5초 동안 세션 정보를 받지 못했습니다`, 'error');
+                        log(`현재 상태 - Socket 연결: ${socket.connected}, 세션 ID: ${currentSessionId}`, 'error');
+                    }
+                }, 5000);
+            } else {
+                log(`❌ 세션 참가 실패 - Socket: ${!!socket}, SessionId: ${sessionId}`, 'error');
+            }
+        }
+        
+        function seekReplay(timeOffset) {
+            if (socket && currentSessionId) {
+                const newTime = Math.max(0, currentSessionTime + timeOffset);
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'SEEK',
+                    timestamp: newTime
+                });
+                log(`상대 시간 이동: ${timeOffset > 0 ? '+' : ''}${timeOffset}초`, 'info');
+            }
+        }
+        
+        function stop() {
+            if (socket && currentSessionId) {
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'STOP'
+                });
+                log('재생 정지', 'info');
+            }
+        }
+        
+        function seekFromProgressBar(event) {
+            if (maxSessionTime > 0 && socket && currentSessionId) {
+                const rect = event.currentTarget.getBoundingClientRect();
+                const clickX = event.clientX - rect.left;
+                const percentage = clickX / rect.width;
+                const seekTime = maxSessionTime * percentage;
+                
+                socket.emit('replay-control', {
+                    sessionId: currentSessionId,
+                    type: 'SEEK',
+                    timestamp: seekTime
+                });
+                log(`프로그레스 바에서 시간 이동: ${formatSessionTime(seekTime)}`, 'info');
+            }
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+        
+        function saveLogs() {
+            const logs = document.getElementById('logs');
+            const logText = Array.from(logs.children)
+                .map(entry => entry.textContent)
+                .join('\n');
+            
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chronof1-logs-${new Date().toISOString().replace(/[:.]/g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            log('로그가 파일로 저장되었습니다', 'success');
+        }
+        
+        function updateTimingDisplay(data) {
+            const tbody = document.getElementById('timingBody');
+            
+            // 현재 세션 정보 업데이트
+            currentSessionTime = data.sessionTime || 0;
+            const progressPercent = maxSessionTime > 0 ? (currentSessionTime / maxSessionTime) * 100 : 0;
+            
+            // 세션 정보 업데이트
+            document.getElementById('session-info').innerHTML = `
+                <p>
+                    <strong>세션:</strong> ${data.sessionId} | 
+                    <strong>시간:</strong> ${currentSessionTime.toFixed(3)}s / ${maxSessionTime.toFixed(0)}s |
+                    <strong>랩:</strong> ${data.currentLap || 'N/A'} | 
+                    <strong>상태:</strong> ${data.sessionStatus}
+                </p>
+            `;
+            
+            // 프로그레스 바 업데이트
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${Math.max(progressPercent, 2)}%`;
+            progressBar.textContent = `${Math.floor(progressPercent)}%`;
+            
+            // 통계 업데이트
+            document.getElementById('currentTime').textContent = formatSessionTime(currentSessionTime);
+            document.getElementById('driverCount').textContent = data.drivers ? data.drivers.length : 0;
+            document.getElementById('sessionStatus').textContent = data.sessionStatus || '-';
+            
+            if (!data.drivers || data.drivers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="18" style="text-align: center; color: #ef4444;">데이터 없음</td></tr>';
+                return;
+            }
+            
+            // 포지션 순으로 정렬
+            const sortedDrivers = [...data.drivers].sort((a, b) => {
+                const posA = a.position || 999;
+                const posB = b.position || 999;
+                return posA - posB;
+            });
+            
+            tbody.innerHTML = sortedDrivers.map(driver => `
+                <tr>
+                    <td>${driver.position || '-'}</td>
+                    <td style="font-weight: bold; color: ${driver.team?.color || '#60a5fa'}">
+                        <span class="team-color" style="background-color: ${driver.team?.color || '#ffffff'};"></span>
+                        ${driver.carNumber}
+                    </td>
+                    <td>${driver.driver?.code || driver.driver?.fullName || '-'}</td>
+                    <td>${driver.team?.shortName || driver.team?.name || '-'}</td>
+                    <td>${driver.lapNumber || '-'}</td>
+                    <td>${formatTime(driver.currentLapTime)}</td>
+                    <td>${formatTime(driver.bestLapTime)}</td>
+                    <td>${driver.distanceToDriverAhead ? driver.distanceToDriverAhead.toFixed(1) + 'm' : '-'}</td>
+                    <td>${formatTime(driver.sector1Time)}</td>
+                    <td>${formatTime(driver.sector2Time)}</td>
+                    <td>${formatTime(driver.sector3Time)}</td>
+                    <td>${driver.speed ? Math.round(driver.speed) + ' km/h' : '-'}</td>
+                    <td>${driver.throttle ? Math.round(driver.throttle) + '%' : '-'}</td>
+                    <td>${driver.brake ? '■' : ''}</td>
+                    <td>${driver.gear || 'N'}</td>
+                    <td>${driver.rpm ? Math.round(driver.rpm) : '-'}</td>
+                    <td>${driver.drs || '-'}</td>
+                    <td style="font-weight: bold; color: ${getStatusColor(driver.status)}">${driver.status || '-'}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function getStatusColor(status) {
+            switch(status) {
+                case 'Racing': return '#22c55e';
+                case 'On Track': return '#3b82f6';
+                case 'In Pits': return '#f59e0b';
+                case 'Stopped': return '#ef4444';
+                case 'No Data': return '#6b7280';
+                default: return '#ffffff';
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            log('ChronoF1 라이브 타이밍 테스트 클라이언트 시작', 'info');
+            log('성능 최적화 및 안정성 개선 버전', 'info');
+        });
+    </script>
+</body>
+</html>

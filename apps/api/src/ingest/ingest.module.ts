@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
+import { FastF1IngestService } from './services/fastf1-ingest.service';
 import { IngestController } from './controllers/ingest.controller';
-import { IngestService } from './services/ingest.service';
 
 @Module({
+  providers: [FastF1IngestService],
   controllers: [IngestController],
-  providers: [IngestService],
-  exports: [IngestService],
+  exports: [FastF1IngestService],
 })
 export class IngestModule {}
